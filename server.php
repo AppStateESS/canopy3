@@ -13,8 +13,5 @@
  */
 define('C3_ROOT', __DIR__ . '/');
 
-/**
- *
- */
 require_once C3_ROOT . '/vendor/autoload.php';
 require_once C3_ROOT . '/src/AutoLoader.php';

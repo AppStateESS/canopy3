@@ -13,7 +13,7 @@
  * Example file only
  *
  */
-require_once '../../Boot.php';
+require_once '../../server.php';
 
 Canopy3\Site::view(3);
 

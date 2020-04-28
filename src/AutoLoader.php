@@ -10,29 +10,43 @@
  * @license https://opensource.org/licenses/MIT
  */
 spl_autoload_register(function($namespaceString) {
-    $filePath = getRequireDirectory($namespaceString);
-    if (is_file($filePath)) {
-        require_once $filePath;
-    } else {
-        trigger_error('File not found:' . $filePath);
-    }
+    AutoLoader::run($namespaceString);
 });
 
-/**
- * Returns a directory string based on the namespaceString
- * @param string $namespaceString
- * @return string
- */
-function getRequireDirectory(string $namespaceString)
+class AutoLoader
 {
-    $namespaceArray = explode('\\', $namespaceString);
-    $fileName = array_pop($namespaceArray);
-    $library = array_shift($namespaceArray);
-    $directory = empty($namespaceArray) ? '/' : implode('/', $namespaceArray);
-    if ($library == 'Canopy3') {
-        $requireDirectory = C3_ROOT . 'src' . $directory . $fileName . '.php';
-    } else {
-        $requireDirectory = C3_ROOT . 'plugins/' . $library . '/src' . $directory . $fileName . '.php';
+
+    public static function run($namespaceString)
+    {
+        $namespaceArray = explode('\\', $namespaceString);
+        $libraryName = array_shift($namespaceArray); // Plugin
+        $fileName = array_pop($namespaceArray); // Admin
+        $directory = empty($namespaceArray) ? '/' : implode('/', $namespaceArray); // Blog/Controller
+        $libraries = self::getLibraries();
+        if (!isset($libraries[$libraryName])) {
+            return;
+        }
+        $params = $libraries[$libraryName];
+        $file = self::getFile($libraryName, $params);
+        $call = self::getCall($libraryName, $params);
+        require_once C3_ROOT . "src/AutoLoader/$file";
+        $call($fileName, $directory);
     }
-    return $requireDirectory;
+
+    private static function getCall($library, $params)
+    {
+        return $params['call'] ?? $library . 'Loader';
+    }
+
+    private static function getFile($libraryName, $params)
+    {
+        return $params['file'] ?? $libraryName . '.php';
+    }
+
+    private static function getLibraries()
+    {
+        include C3_ROOT . 'src/AutoLoader/Libraries.php';
+        return $autoloadLibraries;
+    }
+
 }

@@ -11,5 +11,5 @@
  */
 function Canopy3Loader($fileName, $directory)
 {
-    require_once C3_ROOT . 'src' . $directory . $fileName . '.php';
+    require_once C3_ROOT . 'src/' . $directory . '/' . $fileName . '.php';
 }

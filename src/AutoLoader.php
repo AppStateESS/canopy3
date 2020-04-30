@@ -19,9 +19,9 @@ class AutoLoader
     public static function run($namespaceString)
     {
         $namespaceArray = explode('\\', $namespaceString);
-        $libraryName = array_shift($namespaceArray); // Plugin
-        $fileName = array_pop($namespaceArray); // Admin
-        $directory = empty($namespaceArray) ? '/' : implode('/', $namespaceArray); // Blog/Controller
+        $libraryName = array_shift($namespaceArray);
+        $fileName = array_pop($namespaceArray);
+        $directory = empty($namespaceArray) ? '/' : implode('/', $namespaceArray);
         $libraries = self::getLibraries();
         if (!isset($libraries[$libraryName])) {
             return;
@@ -29,6 +29,7 @@ class AutoLoader
         $params = $libraries[$libraryName];
         $file = self::getFile($libraryName, $params);
         $call = self::getCall($libraryName, $params);
+
         require_once C3_ROOT . "src/AutoLoader/$file";
         $call($fileName, $directory);
     }

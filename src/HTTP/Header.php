@@ -18,8 +18,8 @@ namespace Canopy3;
 class Header
 {
 
-    private static object $header;
-    private array $robots;
+    private static $header;
+    private $robots;
 
     private function __construct()
     {
@@ -27,7 +27,7 @@ class Header
         $this->robots->allowFollow('robots');
     }
 
-    public static function get(): object
+    public static function singleton(): object
     {
         if (empty(self::$header)) {
             self::$header = new Head;

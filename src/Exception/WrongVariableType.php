@@ -12,12 +12,13 @@
 
 namespace Canopy3\Exception;
 
-class FileNotFound extends ExceptionAbstract
+class WrongVariableType extends ExceptionAbstract
 {
 
-    public function __construct($fileName)
+    public function __construct(string $expectedType, string $wrongType)
     {
-        parent::__construct("File not found: $fileName");
+        $message = "Expected variable type $expectType but received $wrongType";
+        parent::__construct($message);
     }
 
 }

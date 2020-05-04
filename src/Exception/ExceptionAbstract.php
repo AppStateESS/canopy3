@@ -12,12 +12,15 @@
 
 namespace Canopy3\Exception;
 
-class FileNotFound extends ExceptionAbstract
+class ExceptionAbstract extends \Exception
 {
 
-    public function __construct($fileName)
+    private $severity;
+
+    public function setSeverity(int $severity = 10)
     {
-        parent::__construct("File not found: $fileName");
+        $this->severity = $severity > 10 ? 10 : $severity < 0 ? 0 : $severity;
+        return $this;
     }
 
 }

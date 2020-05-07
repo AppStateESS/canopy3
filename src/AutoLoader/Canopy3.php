@@ -11,5 +11,9 @@
  */
 function Canopy3Loader($fileName, $directory)
 {
-    require_once C3_ROOT . 'src/' . $directory . '/' . $fileName . '.php';
+    $path = C3_ROOT . 'src/' . $directory . '/' . $fileName . '.php';
+    if (!is_file($path)) {
+        throw new \Exception("File not found for class [$fileName].");
+    }
+    require_once $path;
 }

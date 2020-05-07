@@ -12,8 +12,7 @@
 
 namespace Canopy3;
 
-use Canopy3\Template\ArrayValueTemplate;
-use Canopy3\Template\ObjectValueTemplate;
+use Canopy3\Template\ContentStack;
 use Canopy3\Exception\ExpectedType;
 
 class Template
@@ -21,7 +20,7 @@ class Template
 
     private $path;
     private $values = [];
-    private $templateFile;
+    private $registeredFunctions;
 
     public function __construct(string $path = null)
     {
@@ -31,26 +30,56 @@ class Template
         }
     }
 
-    public function render(string $fileName, $values, $emptyWarning = false)
+    public function render(string $fileName, array $values,
+            $emptyWarning = false)
     {
-        $fileName = preg_match('@\.html@', $fileName) ? $fileName : $fileName . '.html';
+        $fileName = self::htmlSuffix($fileName);
         $filePath = $this->path . $fileName;
         if (!is_file($filePath)) {
             throw new \Canopy3\Exception\FileNotFound($filePath);
         }
-        if (is_array($values)) {
-            $t = new ArrayValueTemplate($values, $emptyWarning);
-        } elseif (is_object($values)) {
-            $t = new ObjectValueTemplate($values, $emptyWarning);
-        } else {
-            throw new ExpectedType('object/array', gettype($values));
-        }
 
+        $t = new ContentStack($this, $values, $emptyWarning);
+
+        return self::captureContent($t, $filePath);
+    }
+
+    public function registerFunction(string $functionName,
+            \Closure $functionCode)
+    {
+        $this->registeredFunctions[$functionName] = $functionCode;
+    }
+
+    public static function htmlSuffix($fileName)
+    {
+        return preg_match('@\.html@', $fileName) ? $fileName : $fileName . '.html';
+    }
+
+    public function runRegistered(string $funcName, $value)
+    {
+        if (!is_callable($this->registeredFunctions[$funcName])) {
+            throw new \Exception("Function [$funcName] was not registered");
+        }
+        return $this->registeredFunctions[$funcName]($value);
+    }
+
+    public function isRegistered(string $functionName)
+    {
+        return isset($this->registeredFunctions[$functionName]);
+    }
+
+    private static function captureContent(ContentStack $t, $filePath)
+    {
         ob_start();
         include $filePath;
         $contents = ob_get_contents();
         ob_end_clean();
         return $contents;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
     }
 
 }

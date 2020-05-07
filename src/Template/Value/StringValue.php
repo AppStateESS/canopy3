@@ -10,26 +10,14 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3\Template;
+namespace Canopy3\Template\Value;
 
-class Content
+class StringValue extends Value
 {
 
-    private $value;
-
-    public function __construct(string $value)
+    protected function verify($value)
     {
-        $this->value = $value;
-    }
-
-    public function __toString()
-    {
-        return $this->value;
-    }
-
-    public function asDate($format = "%c")
-    {
-        return strftime('%c', $this->value);
+        return is_string($value);
     }
 
 }

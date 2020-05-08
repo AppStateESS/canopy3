@@ -18,10 +18,10 @@ use Canopy3\Template;
 class ContentStack
 {
 
-    protected $values;
     protected $emptyWarning = false;
     protected $filePath;
     protected $template;
+    protected $values;
 
     public function __construct($template, array $values, $emptyWarning = false)
     {
@@ -37,9 +37,18 @@ class ContentStack
         }
     }
 
-    public function get(string $valueName)
+    public function __call($functionName, $value)
     {
-        return $this->values[$valueName] ?? ($this->emptyWarning ? "<!-- Template variable [$valueName] missing -->" : null);
+        if ($this->template->isRegistered($functionName)) {
+            return $this->template->runRegistered($functionName, $value);
+        } else {
+            throw new \Exception("Unknown method: $functionName");
+        }
+    }
+
+    public function __get($valueName)
+    {
+        return $this->get($valueName);
     }
 
     public function __isset($valueName)
@@ -52,18 +61,9 @@ class ContentStack
         echo $this->get($valueName);
     }
 
-    public function __get($valueName)
+    public function get(string $valueName)
     {
-        return $this->get($valueName);
-    }
-
-    public function __call($functionName, $value)
-    {
-        if ($this->template->isRegistered($functionName)) {
-            return $this->template->runRegistered($functionName, $value);
-        } else {
-            throw new \Exception("Unknown method: $functionName");
-        }
+        return $this->values[$valueName] ?? ($this->emptyWarning ? "<!-- Template variable [$valueName] is missing -->" : null);
     }
 
     public function getValues()

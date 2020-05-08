@@ -35,19 +35,6 @@ abstract class Value
         return $this->value;
     }
 
-    public function get()
-    {
-        return $this->value;
-    }
-
-    public function set($value)
-    {
-        if (!$this->verify($value)) {
-            throw new \Exception('Incorrect variable type: ' . gettype($value));
-        }
-        $this->value = $value;
-    }
-
     public static function assign($value, $template)
     {
         switch (gettype($value)) {
@@ -60,6 +47,19 @@ abstract class Value
             case 'string':
                 return new StringValue($value, $template);
         }
+    }
+
+    public function get()
+    {
+        return $this->value;
+    }
+
+    public function set($value)
+    {
+        if (!$this->verify($value)) {
+            throw new \Exception('Incorrect variable type: ' . gettype($value));
+        }
+        $this->value = $value;
     }
 
 }

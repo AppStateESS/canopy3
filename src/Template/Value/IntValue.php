@@ -17,14 +17,14 @@ use Canopy3\Exception\WrongVariableType;
 class IntValue extends Value
 {
 
-    protected function verify($value)
-    {
-        return is_int($value);
-    }
-
     public function asDate($format = "%c")
     {
         return strftime('%c', $this->value);
+    }
+
+    protected function verify($value)
+    {
+        return is_int($value);
     }
 
 }

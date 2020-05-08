@@ -17,19 +17,6 @@ use Canopy3\Template;
 class ArrayValue extends Value
 {
 
-    protected function verify($value)
-    {
-        return is_array($value);
-    }
-
-    public function loopFunction($functionName)
-    {
-        foreach ($this->value as $val) {
-            $stack[] = $functionName($val);
-        }
-        return implode("\n", $stack);
-    }
-
     public function asTableRows(array $options)
     {
         $rowClass = null;
@@ -50,12 +37,12 @@ class ArrayValue extends Value
         return implode("\n", $table);
     }
 
-    private function orderedRow($order, $row)
+    public function loopFunction($functionName)
     {
-        foreach ($order as $colName) {
-            $columnStack[] = "<td>{$row[$colName]}</td>";
+        foreach ($this->value as $val) {
+            $stack[] = $functionName($val);
         }
-        return implode("", $columnStack);
+        return implode("\n", $stack);
     }
 
     public function loopInclude($fileName)
@@ -64,6 +51,19 @@ class ArrayValue extends Value
             $contentArray[] = $this->template->render($fileName, $row);
         }
         return implode("\n", $contentArray);
+    }
+
+    protected function verify($value)
+    {
+        return is_array($value);
+    }
+
+    private function orderedRow($order, $row)
+    {
+        foreach ($order as $colName) {
+            $columnStack[] = "<td>{$row[$colName]}</td>";
+        }
+        return implode("", $columnStack);
     }
 
 }

@@ -30,6 +30,27 @@ class Template
         }
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    public static function htmlSuffix($fileName)
+    {
+        return preg_match('@\.html@', $fileName) ? $fileName : $fileName . '.html';
+    }
+
+    public function isRegistered(string $functionName)
+    {
+        return isset($this->registeredFunctions[$functionName]);
+    }
+
+    public function registerFunction(string $functionName,
+            \Closure $functionCode)
+    {
+        $this->registeredFunctions[$functionName] = $functionCode;
+    }
+
     public function render(string $fileName, array $values,
             $emptyWarning = false)
     {
@@ -44,28 +65,12 @@ class Template
         return self::captureContent($t, $filePath);
     }
 
-    public function registerFunction(string $functionName,
-            \Closure $functionCode)
-    {
-        $this->registeredFunctions[$functionName] = $functionCode;
-    }
-
-    public static function htmlSuffix($fileName)
-    {
-        return preg_match('@\.html@', $fileName) ? $fileName : $fileName . '.html';
-    }
-
     public function runRegistered(string $funcName, $value)
     {
         if (!is_callable($this->registeredFunctions[$funcName])) {
             throw new \Exception("Function [$funcName] was not registered");
         }
         return $this->registeredFunctions[$funcName]($value);
-    }
-
-    public function isRegistered(string $functionName)
-    {
-        return isset($this->registeredFunctions[$functionName]);
     }
 
     private static function captureContent(ContentStack $t, $filePath)
@@ -75,11 +80,6 @@ class Template
         $contents = ob_get_contents();
         ob_end_clean();
         return $contents;
-    }
-
-    public function getPath()
-    {
-        return $this->path;
     }
 
 }

@@ -13,47 +13,26 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3;
+namespace Canopy3\HTTP;
 
-class Header
+class Header extends AbstractMetaData
 {
 
     private static $header;
-    private $robots;
-
-    private function __construct()
-    {
-        $this->robots->allowIndex('robots');
-        $this->robots->allowFollow('robots');
-    }
 
     public static function singleton(): object
     {
         if (empty(self::$header)) {
-            self::$header = new Head;
+            self::$header = new Header;
         }
         return self::$header;
     }
 
-    public function addRobot($name, $content)
+    public function view()
     {
+        $robots = (string) Robots::singleton();
 
-    }
-
-    public function setNoIndex($name = 'robots')
-    {
-
-    }
-
-    public function getRobots()
-    {
-        $robotArray = [];
-        foreach ($this->robots as $name => $content) {
-            $robotArray[] = <<<EOF
-<meta name="$name" content="$content" />
-EOF;
-        }
-        return implode("\n", $robotArray);
+        return 'header';
     }
 
 }

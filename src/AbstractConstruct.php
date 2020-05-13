@@ -12,7 +12,7 @@
 
 namespace Canopy3;
 
-class Construct
+abstract class AbstractConstruct
 {
 
     public function __get($valueName)

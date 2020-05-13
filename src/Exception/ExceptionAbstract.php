@@ -15,7 +15,13 @@ namespace Canopy3\Exception;
 class ExceptionAbstract extends \Exception
 {
 
-    private $severity;
+    private int $severity;
+
+    public function __construct(string $fileName, int $severity = 10)
+    {
+        parent::__construct($fileName);
+        $this->setSeverity($severity);
+    }
 
     public function setSeverity(int $severity = 10)
     {

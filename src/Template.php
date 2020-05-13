@@ -18,9 +18,9 @@ use Canopy3\Exception\ExpectedType;
 class Template
 {
 
-    private $path;
-    private $values = [];
-    private $registeredFunctions;
+    private string $path;
+    private array $values = [];
+    private array $registeredFunctions = [];
 
     public function __construct(string $path = null)
     {
@@ -56,6 +56,7 @@ class Template
     {
         $fileName = self::htmlSuffix($fileName);
         $filePath = $this->path . $fileName;
+
         if (!is_file($filePath)) {
             throw new \Canopy3\Exception\FileNotFound($filePath);
         }

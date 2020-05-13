@@ -12,6 +12,5 @@
 $autoloadLibraries = [
     'Canopy3' => ['file' => 'Canopy3.php'],
     'Plugin' => ['file' => 'Resource.php'],
-    'Theme' => ['file' => 'Resource.php'],
     'DashBoard' => ['file' => 'Resource.php']
 ];

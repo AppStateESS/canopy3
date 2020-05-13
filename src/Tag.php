@@ -15,9 +15,22 @@ namespace Canopy3;
 class Tag
 {
 
-    protected $child;
-    protected $params = [];
-    protected $tagName;
+    protected string $child;
+    protected array $params = [];
+    protected string $tagName;
+
+    public function __call(string $paramName, array $paramValues)
+    {
+        if (isset($this->params[$paramName])) {
+            $this->params[$paramName] = implode('', $paramValues);
+        }
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->print();
+    }
 
     public static function build(string $tagName)
     {
@@ -40,19 +53,6 @@ EOF;
 <{$this->tagName} {$this->parameters()}>{$this->child}</{$this->tagName}>
 EOF;
         }
-    }
-
-    public function __toString()
-    {
-        return $this->print();
-    }
-
-    public function __call(string $paramName, array $paramValues)
-    {
-        if (isset($this->params[$paramName])) {
-            $this->params[$paramName] = implode('', $paramValues);
-        }
-        return $this;
     }
 
     protected function __construct(array $params = null, string $tagName = null)

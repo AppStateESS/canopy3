@@ -21,6 +21,8 @@ use Canopy3\Tag\Meta;
 class Robots
 {
 
+    static $robots;
+
     /**
      * An array of boolean meta conditions. Only displayed if false.
      * archive - allow caching
@@ -64,7 +66,15 @@ class Robots
      */
     private $unavailableAfter = 0;
 
-    public function __construct()
+    public function singleton()
+    {
+        if (!self::$robots) {
+            self::$robots = new self;
+        }
+        return self::$robots;
+    }
+
+    private function __construct()
     {
         $this->boolswitches = [
             'archive' => true,
@@ -87,6 +97,11 @@ class Robots
             case 'translate':
                 $this->boolSwitches[$name] = (bool) $value;
         }
+    }
+
+    public function __toString()
+    {
+        return $this->print();
     }
 
     public function print()

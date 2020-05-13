@@ -9,9 +9,7 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-spl_autoload_register(function($namespaceString) {
-    AutoLoader::run($namespaceString);
-});
+spl_autoload_register(fn($namespaceString) => AutoLoader::run($namespaceString));
 
 class AutoLoader
 {

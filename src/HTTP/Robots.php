@@ -5,10 +5,7 @@
  * Stores and outputs robot meta tags for display in a page header. As of this writing,
  * Google supports all the below and Bing ignores the majority.
  *
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT

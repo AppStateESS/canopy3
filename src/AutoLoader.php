@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -28,7 +25,7 @@ class AutoLoader
         $file = self::getFile($libraryName, $params);
         $call = self::getCall($libraryName, $params);
 
-        require_once C3_ROOT . "src/AutoLoader/$file";
+        require_once C3_DIR . "src/AutoLoader/$file";
         $call($fileName, $directory);
     }
 
@@ -44,7 +41,7 @@ class AutoLoader
 
     private static function getLibraries()
     {
-        include C3_ROOT . 'src/AutoLoader/Libraries.php';
+        include C3_DIR . 'src/AutoLoader/Libraries.php';
         return $autoloadLibraries;
     }
 

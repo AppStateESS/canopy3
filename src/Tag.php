@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -15,7 +12,7 @@ namespace Canopy3;
 class Tag
 {
 
-    protected string $child;
+    public ?string $child = null;
     protected array $params = [];
     protected string $tagName;
 
@@ -27,9 +24,24 @@ class Tag
         return $this;
     }
 
+    public function __construct(array $params = null, string $tagName = null,
+            string $child = null)
+    {
+        $this->tagName = $tagName ?? $this->tagName ?? $this->classToTagName();
+        $this->params = $params ?? [];
+        if (!empty($child)) {
+            $this->child = $child;
+        }
+    }
+
     public function __toString()
     {
         return $this->print();
+    }
+
+    public function setParam(string $paramName, string $value)
+    {
+        $this->params[$paramName] = $value;
     }
 
     public static function build(string $tagName)
@@ -55,12 +67,6 @@ EOF;
         }
     }
 
-    protected function __construct(array $params = null, string $tagName = null)
-    {
-        $this->tagName = $tagName ?? $this->tagName ?? $this->classToTagName();
-        $this->params = $params ?? [];
-    }
-
     private function classToTagName()
     {
         $namespaceArray = explode('\\', get_called_class());
@@ -73,7 +79,9 @@ EOF;
             return;
         }
         foreach ($this->params as $param => $value) {
-            $paramList[] = "$param=\"$value\"";
+            if (!is_null($value)) {
+                $paramList[] = "$param=\"$value\"";
+            }
         }
         return implode(' ', $paramList) . ' ';
     }

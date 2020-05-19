@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -36,19 +33,6 @@ abstract class AbstractConstruct
             $className = get_class($this);
             throw new \Exception('Cannot access protected/private property ' . $className . '::$' . $valueName);
         }
-    }
-
-    public static function filterString(string $value)
-    {
-        return trim(strip_tags(filter_var($value, FILTER_SANITIZE_STRING,
-                                FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH)));
-    }
-
-    public static function filterHTML($value, $allowedTags = null)
-    {
-        return trim(strip_tags(filter_var($value, FILTER_UNSAFE_RAW,
-                                FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
-                        $allowedTags));
     }
 
 }

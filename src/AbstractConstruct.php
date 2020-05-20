@@ -9,6 +9,8 @@
 
 namespace Canopy3;
 
+use Canopy3\Exception\InaccessibleProperty;
+
 abstract class AbstractConstruct
 {
 
@@ -20,7 +22,7 @@ abstract class AbstractConstruct
             return $this->$getMethod();
         } else {
             $className = get_class($this);
-            throw new \Exception('Cannot access protected/private property ' . $className . '::$' . $valueName);
+            throw new InaccessibleProperty($className, $valueName);
         }
     }
 
@@ -31,7 +33,7 @@ abstract class AbstractConstruct
             $this->$setMethod($value);
         } else {
             $className = get_class($this);
-            throw new \Exception('Cannot access protected/private property ' . $className . '::$' . $valueName);
+            throw new InaccessibleProperty($className, $valueName);
         }
     }
 

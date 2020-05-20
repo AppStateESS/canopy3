@@ -1,15 +1,29 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
- *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
+
+namespace Canopy3\HTTP;
+
 class Server
 {
-    //put your code here
+
+    public static function getCurrentUrl($with_directory = true)
+    {
+        if (!isset($_SERVER['HTTP_HOST'])) {
+            throw new \Exception('$_SERVER[HTTP_HOST] superglobal does not exist');
+        }
+        $address[] = '//';
+        $address[] = $_SERVER['HTTP_HOST'];
+        if ($with_directory) {
+            $address[] = dirname($_SERVER['PHP_SELF']);
+        }
+
+        $url = preg_replace('@\\\@', '/', implode('', $address)) . '/';
+        return $url;
+    }
+
 }

@@ -10,6 +10,7 @@
 namespace Canopy3\HTTP;
 
 use Canopy3\Variable\StringVar;
+use Canopy3\Exception\InaccessibleProperty;
 
 class Header extends AbstractMetaData
 {
@@ -24,6 +25,15 @@ class Header extends AbstractMetaData
         $this->pageTitle = new StringVar;
     }
 
+    public function __get($varName)
+    {
+        switch ($varName) {
+            case 'pageTitle':
+                return $this->pageTitle->get();
+        }
+        throw new InaccessibleProperty(__class__, $varName);
+    }
+
     public static function singleton(): object
     {
         if (empty(self::$header)) {
@@ -34,7 +44,7 @@ class Header extends AbstractMetaData
 
     public function setSiteTitle($title)
     {
-        $this->sitetitle->set($title);
+        $this->siteTitle->set($title);
     }
 
     public function setPageTitle($title)
@@ -46,9 +56,9 @@ class Header extends AbstractMetaData
     {
         $tag = new \Canopy3\Tag(null, 'title');
         if ($this->pageTitle->isEmpty()) {
-            $tag->child = $this->pageTitle->get();
+            $tag->child = $this->siteTitle->get();
         } else {
-            $tag->child = $this->pagetitle->get . ' - ' . $this->siteTitle->get();
+            $tag->child = $this->pageTitle->get() . ' - ' . $this->siteTitle->get();
         }
         return $tag->print();
     }

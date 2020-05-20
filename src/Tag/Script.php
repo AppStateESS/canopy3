@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -12,12 +9,12 @@
 
 namespace Canopy3\Tag;
 
-class Script extends Tag
+class Script extends \Canopy3\Tag
 {
 
     public function __construct(array $params = null, string $tagName = null)
     {
-        parent::__construct(['src' => '', 'type' => '']);
+        parent::__construct(['src' => $params['src'] ?? '', 'type' => $params['type'] ?? null]);
     }
 
 }

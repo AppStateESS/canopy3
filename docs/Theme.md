@@ -1,0 +1,98 @@
+# Theming
+
+Your theme page template must echo three variables: header, footer, and main. See the example below for more information.
+
+### Page.html
+
+```
+<html>
+  <head>
+    <!--
+      - Pulls in any script (see footer below), meta, link,
+      - or title tags set by the system. It should be placed
+      - in the <head> tag
+      -->
+    <?= $t->header ?>
+  </head>
+  
+  <body>
+    <!--
+      - Although you can have several sections in your theme, you
+      - must have a "main" section. This is the expected or default
+      - destination for content. It is placed in the <body>.
+      - 
+      -->
+      <?= $t->main ?>
+      
+      <div class="custom-tag-area">
+        <!--
+          - Any custom tags added to the theme can be added anywhere
+          - in the body.
+          -->
+        <?= $t->yourCustomTag ?>
+      </div>
+      
+    <!--
+      - Although you may place script tags in the header, it is
+      - recommended the get put in the footer. As such, footer
+      - is also expected in the <body> tag.
+      -->  
+      <?= $t->footer ?>
+  </body>
+  
+</html>
+```
+
+
+Here is an example of the structure.json file included with canopy3-theme-simple.
+
+```
+{
+  "title": "Simple",
+  "description": "A basic page for testing and setup",
+  "defaultPage": "basic",
+  "screenshot": "",
+  "pages": {
+    "basic": {
+      "filename": "basic.html",
+      "title": "Basic",
+      "columns": 1,
+      "altSections": ["top", "bottom"],
+      "description": "Basic one column page display"
+    },
+    "frontPage": {
+      "filename": "front.html",
+      "title": "Front page",
+      "altSections": ["top", "bottom", "rightSide"],
+      "columns": 2,
+      "description": "Front page with large left column, smaller right side"
+    }
+  }
+}
+```
+
+
+## Structure file
+
+Your theme should have a structure.json file in the root directory. The JSON should describe an object with the following parameters.
+
+**title** - the fancy name you have given your theme. It is used for admin information only.
+
+**description** - descriptive information about your theme and what it contains.
+
+**defaultPage** - normally, which page template is used is determined by admin settings. If the Theme class doesn't get a page specification, it will default to this file.
+
+**screenshot** - the image file name of your theme in action. It is not required.
+
+**pages** - an object containing the pages used in your theme. Each page entry should have a simple name (e.g. basic, frontPage).
+
+
+### Pages have the following parameters:
+
+**filename** - name of the template file in the pages directory.
+
+**title** - proper name of the template.
+
+**columns** - number of columns the user should expect
+
+**description** - a verbose summary of the style, capabilities, layout, etc. of the page template.

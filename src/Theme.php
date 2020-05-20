@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -17,7 +14,7 @@ use Canopy3\Theme\Structure;
 use Canopy3\HTTP\Header;
 use Canopy3\HTTP\Footer;
 
-require_once C3_ROOT . 'config/theme.php';
+require_once C3_DIR . 'config/theme.php';
 
 
 if (!defined('C3_DEFAULT_THEME')) {
@@ -60,7 +57,7 @@ class Theme
     private function loadStructure(string $page = null)
     {
         $this->structure = new Structure;
-        $filePath = C3_ROOT . 'resources/themes/' . $this->themeName . '/structure.json';
+        $filePath = C3_DIR . 'resources/themes/' . $this->themeName . '/structure.json';
         if (!is_file($filePath)) {
             throw new FileNotFound($filePath);
         }
@@ -68,7 +65,7 @@ class Theme
         $structureObj = json_decode($structureJson);
 
         $this->structure->setTitle($structureObj->title);
-        $this->structure->directory = $structureObj->directory;
+        $this->structure->setDirectory($this->themeName);
         $this->structure->setDescription($structureObj->description);
         $this->structure->setScreenshot($structureObj->screenshot);
         $this->structure->setPages($structureObj->pages);
@@ -94,27 +91,56 @@ class Theme
         return $sections;
     }
 
+    public function includeScript(string $scriptPath)
+    {
+        $scriptTag = new Tag\Script(['src' => $this->getThemeUrl() . $scriptPath]);
+        return (string) $scriptTag;
+    }
+
+    public function includeStyle(string $stylePath)
+    {
+        $styleTag = new Tag\Style(['href' => $this->getThemeUrl() . $stylePath]);
+        return (string) $styleTag;
+    }
+
     public function view()
     {
-        $template = new Template($this->getThemePagesDirectory());
-        $fileName = $this->structure->currentPage->filename;
+        $template = $this->buildTemplate();
+        $fileName = 'pages/' . $this->structure->currentPage->filename;
         $header = Header::singleton();
         $footer = Footer::singleton();
         $values = $this->getContent();
+
         $values['header'] = $header->view();
         $values['footer'] = $footer->view();
-
+        $values['pageTitle'] = $header->pageTitle;
+        $values['themeUrl'] = $this->getThemeUrl();
+        $values['themeDirectory'] = $this->getThemeDirectory();
         return $template->render($fileName, $values);
     }
 
     public function getThemeDirectory()
     {
-        return 'resources/themes/' . $this->structure->directory;
+        return C3_DIR . 'resources/themes/' . $this->structure->directory . '/';
     }
 
-    public function getThemePagesDirectory()
+    public function getThemeUrl()
     {
-        return $this->getThemeDirectory() . '/pages/';
+        return C3_URL . 'resources/themes/' . $this->structure->directory . '/';
+    }
+
+    private function buildTemplate()
+    {
+        $template = new Template($this->getThemeDirectory());
+        $includeScript = function($args) {
+            return $this->includeScript($args[0]);
+        };
+        $template->registerFunction('includeScript', $includeScript);
+        $includeStyle = function($args) {
+            return $this->includeStyle($args[0]);
+        };
+        $template->registerFunction('includeStyle', $includeStyle);
+        return $template;
     }
 
 }

@@ -58,11 +58,12 @@ class Tag
     {
         if (is_null($this->child)) {
             return <<<EOF
-<{$this->tagName} {$this->parameters()}/>
+<{$this->tagName}{$this->parameters()}/>
 EOF;
         } else {
-            <<<EOF
-<{$this->tagName} {$this->parameters()}>{$this->child}</{$this->tagName}>
+            return
+                    <<<EOF
+<{$this->tagName}{$this->parameters()}>{$this->child}</{$this->tagName}>
 EOF;
         }
     }
@@ -83,7 +84,7 @@ EOF;
                 $paramList[] = "$param=\"$value\"";
             }
         }
-        return implode(' ', $paramList) . ' ';
+        return ' ' . implode(' ', $paramList) . ' ';
     }
 
 }

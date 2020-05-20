@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -26,7 +23,7 @@ class Template
     {
         if (!is_null($path)) {
             $slash = preg_match('@/$@', $path) ? null : '/';
-            $this->path = C3_ROOT . $path . $slash;
+            $this->path = $path . $slash;
         }
     }
 
@@ -56,7 +53,6 @@ class Template
     {
         $fileName = self::htmlSuffix($fileName);
         $filePath = $this->path . $fileName;
-
         if (!is_file($filePath)) {
             throw new \Canopy3\Exception\FileNotFound($filePath);
         }

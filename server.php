@@ -1,17 +1,32 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * Loads sets root directory and autoloader.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-define('C3_ROOT', __DIR__ . '/');
+define('C3_DIR', __DIR__ . '/');
 
-require_once C3_ROOT . '/vendor/autoload.php';
-require_once C3_ROOT . '/src/AutoLoader.php';
+/**
+ * Composer autoloader
+ */
+require_once C3_DIR . 'vendor/autoload.php';
+
+/**
+ * Canopy3 autoloader
+ */
+require_once C3_DIR . 'src/AutoLoader.php';
+
+/**
+ * Define the C3_URI variable
+ */
+$urlConfig = C3_DIR . 'config/url.php';
+if (is_file($urlConfig)) {
+    require_once $urlConfig;
+} else {
+    throw new \Canopy3\Exception\FileNotFound($urlConfig);
+}
+

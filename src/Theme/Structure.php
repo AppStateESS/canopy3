@@ -1,10 +1,7 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -13,6 +10,7 @@
 namespace Canopy3\Theme;
 
 use Canopy3\Theme\Page;
+use Canopy3\Variable\StringVar;
 
 class Structure extends \Canopy3\AbstractConstruct
 {
@@ -21,7 +19,7 @@ class Structure extends \Canopy3\AbstractConstruct
      * Title of theme
      * @var string
      */
-    private string $title;
+    private StringVar $title;
 
     /**
      * Directory of theme under theme directory.
@@ -33,7 +31,7 @@ class Structure extends \Canopy3\AbstractConstruct
      * Description of theme
      * @var string
      */
-    private string $description;
+    private StringVar $description;
 
     /**
      * Page templates.
@@ -56,7 +54,9 @@ class Structure extends \Canopy3\AbstractConstruct
 
     public function __construct()
     {
-
+        $this->title = new StringVar;
+        $this->description = new StringVar;
+        $this->description->allowHtml(true)->allowedTags(['p', 'strong', 'b', 'i', 'em', 'a']);
     }
 
     public function setDirectory($directory)
@@ -71,12 +71,12 @@ class Structure extends \Canopy3\AbstractConstruct
 
     public function setTitle(string $title)
     {
-        $this->title = self::filterString($title);
+        $this->title->set($title);
     }
 
     public function setDescription(string $description)
     {
-        $this->description = self::filterHTML($description);
+        $this->description->set($description);
     }
 
     public function getPage($pageName)
@@ -103,15 +103,15 @@ class Structure extends \Canopy3\AbstractConstruct
 
     public function setScreenshot($screenshot)
     {
-        $this->screenshot = self::filterString($screenshot);
+        $this->screenshot = realpath($screenshot);
     }
 
-    public function setDefaultPage($defaultPage)
+    public function setDefaultPage(string $defaultPage)
     {
         if (empty($this->pages)) {
             throw new \Exception('Can not set default before templates');
         }
-        $defaultPage = self::filterString($defaultPage);
+        $defaultPage = StringVar::filter($defaultPage);
         if (!$this->pageExists($defaultPage)) {
             throw new \Exception("Default page template '$defaultPage' is not included in template listing");
         }

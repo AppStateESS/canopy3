@@ -1,19 +1,20 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-require_once '../server.php';
+try {
+    require_once '../server.php';
+} catch (\Canopy3\Exception\FileNotFound $e) {
+    // The config/url.php is missing. Create one.
+    echo \Dashboard\CreateUrl\Form::view();
+}
 
-if (!is_file(C3_ROOT . 'config/db.php')) {
+if (!is_file(C3_DIR . 'config/db.php')) {
 
-    echo 'no config';
 } else {
     echo 'dashboard';
 }

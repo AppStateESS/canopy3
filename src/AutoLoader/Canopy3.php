@@ -1,17 +1,20 @@
 <?php
 
 /**
- * MIT License
- * Copyright (c) 2020 Electronic Student Services @ Appalachian State University
  *
- * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
 function Canopy3Loader(string $fileName, string $directory)
 {
-    $path = C3_ROOT . 'src/' . $directory . '/' . $fileName . '.php';
+    $pathStack[] = C3_DIR . 'src/';
+    if ($directory !== '/') {
+        $pathStack[] = $directory . '/';
+    }
+    $pathStack[] = $fileName . '.php';
+    $path = implode('', $pathStack);
+
     if (!is_file($path)) {
         throw new \Exception("File [$path] not found for class [$fileName]");
     }

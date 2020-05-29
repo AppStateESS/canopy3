@@ -13,17 +13,22 @@ Your theme page template must echo three variables: header, footer, and main. Se
       - in the <head> tag
       -->
     <?= $t->header ?>
+    <!--
+      - Includes a script in the theme directory. See more information
+      - below.
+      -->
+    <?= $t->includeScript('dist/js/bootstrap.js', false)?>
   </head>
-  
+
   <body>
     <!--
       - Although you can have several sections in your theme, you
       - must have a "main" section. This is the expected or default
       - destination for content. It is placed in the <body>.
-      - 
+      -
       -->
       <?= $t->main ?>
-      
+
       <div class="custom-tag-area">
         <!--
           - Any custom tags added to the theme can be added anywhere
@@ -31,15 +36,8 @@ Your theme page template must echo three variables: header, footer, and main. Se
           -->
         <?= $t->yourCustomTag ?>
       </div>
-      
-    <!--
-      - Although you may place script tags in the header, it is
-      - recommended the get put in the footer. As such, footer
-      - is also expected in the <body> tag.
-      -->  
-      <?= $t->footer ?>
   </body>
-  
+
 </html>
 ```
 
@@ -96,3 +94,26 @@ Your theme should have a structure.json file in the root directory. The JSON sho
 **columns** - number of columns the user should expect
 
 **description** - a verbose summary of the style, capabilities, layout, etc. of the page template.
+
+## Functions
+
+You may call some functions from the ```$t``` variable to help your theme.
+
+### includeScript
+
+```includeScript``` accepts two parameters.
+```
+<?= $t->includeScript('directory/to/the/file.js', $async);?>
+```
+
+The ```$async``` value determines whether the script file will be executed asynchronously (while the page is loading) or deferred (when the page loading is complete).
+
+In Bootstrap, for example, the Javascript file needs to be deferred, so the async parameter is ```false```.
+
+### includeStyle
+
+```includeStyle``` only needs the relative link to a style sheet.
+
+```
+<?= $t->includeStyle('dist/css/bootstrap.css')?>
+```

@@ -12,10 +12,11 @@ namespace Canopy3\HTTP;
 use Canopy3\Variable\StringVar;
 use Canopy3\Exception\InaccessibleProperty;
 
-class Header extends AbstractMetaData
+class Header
 {
 
     private static $header;
+    private array $scripts = [];
     private StringVar $siteTitle;
     private StringVar $pageTitle;
 
@@ -32,6 +33,20 @@ class Header extends AbstractMetaData
                 return $this->pageTitle->get();
         }
         throw new InaccessibleProperty(__class__, $varName);
+    }
+
+    public function addScript(string $src, bool $defer = true)
+    {
+        $script = new \Canopy3\Tag\Script(['src' => $src, 'defer' => $defer]);
+        $this->scripts[] = $script;
+    }
+
+    public function getScripts()
+    {
+        if (empty($this->scripts)) {
+            return null;
+        }
+        return implode("\n", $this->scripts);
     }
 
     public static function singleton(): object
@@ -67,7 +82,10 @@ class Header extends AbstractMetaData
     {
         $values[] = (string) Robots::singleton();
         $values[] = $this->getFullTitle();
-        return implode("\n", $values);
+        if ($scripts = $this->getScripts()) {
+            $values[] = $scripts;
+        }
+        return implode("\n", $values) . "\n";
     }
 
 }

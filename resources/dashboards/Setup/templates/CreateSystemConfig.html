@@ -1,0 +1,29 @@
+<p>Canopy 3 needs the following file: <code><?=$t->c3Dir?>config/system.php</code></p>
+<p> The file sets URL defines for three resource directories:</p>
+<ul>
+  <li><code><?=$t->c3Dir?>resource/themes/</code></li>
+  <li><code><?=$t->c3Dir?>resource/plugins/</code></li>
+  <li><code><?=$t->c3Dir?>resource/dashboards/</code></li>
+</ul>
+<p>Canopy3 depends on this file to serve Javascript and CSS files to the browser.</p>
+<p>I am guessing your resource URL is below. Please edit the address if it is incorrect.</p>
+<form method="post" action="./hello.php">
+  <div class="row mb-4">
+    <div class="col-sm-6">
+      <input type="text" name="resourceUrl" id="resourceUrl" value="<?=$t->resourceUrl?>" class="form-control" />
+    </div>
+  </div>
+
+  <?php if ($t->configWritable->true):?>
+  <p>Your <code><?=$t->c3Dir?>config/</code> directory is writable so we can
+    <button type="submit" class="btn btn-outline-primary btn-sm">create the system.php file for you.</button>
+  </p>
+</form>
+<p>or</p>
+<?php endif;?>
+<p>You can copy and paste the information below into the file: <code><?=$t->c3Dir?>config/system.php</code></p>
+<div class="bg-light border-dark p-3">
+  <pre>
+<&#63;php
+define('C3_URL', '//localhost/canopy3/');
+  </pre>

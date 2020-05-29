@@ -12,9 +12,17 @@ namespace Canopy3\Tag;
 class Script extends \Canopy3\Tag
 {
 
-    public function __construct(array $params = null, string $tagName = null)
+    public function __construct(array $attributes = null, string $tagName = null)
     {
-        parent::__construct(['src' => $params['src'] ?? '', 'type' => $params['type'] ?? null]);
+        parent::__construct(['src' => $attributes['src'] ?? '', 'type' => $attributes['type'] ?? null]);
+        $this->isDefer($attributes['defer'] ?? false);
+        $this->singleton = false;
+    }
+
+    public function isDefer(bool $defer = true)
+    {
+        $this->setBoolAttribute('async', !$defer);
+        $this->setBoolAttribute('defer', $defer);
     }
 
 }

@@ -34,11 +34,6 @@ class Theme
      */
     private Structure $structure;
 
-//    private $frontPageTemplate;
-//    private $internalTemplate;
-//    private $errorTemplate;
-
-
     private function __construct(string $themeName = C3_DEFAULT_THEME,
             string $page = null)
     {
@@ -52,27 +47,6 @@ class Theme
             self::$singleton = new self;
         }
         return self::$singleton;
-    }
-
-    private function loadStructure(string $page = null)
-    {
-        $this->structure = new Structure;
-        $filePath = C3_DIR . 'resources/themes/' . $this->themeName . '/structure.json';
-        if (!is_file($filePath)) {
-            throw new FileNotFound($filePath);
-        }
-        $structureJson = file_get_contents($filePath);
-        $structureObj = json_decode($structureJson);
-
-        $this->structure->setTitle($structureObj->title);
-        $this->structure->setDirectory($this->themeName);
-        $this->structure->setDescription($structureObj->description);
-        $this->structure->setScreenshot($structureObj->screenshot);
-        $this->structure->setPages($structureObj->pages);
-        $this->structure->setDefaultPage($structureObj->defaultPage);
-        if ($page && $this->structure->pageExists($page)) {
-            $this->structure->setCurrentPage($page);
-        }
     }
 
     public function addContent(string $content, string $section = null)
@@ -91,16 +65,26 @@ class Theme
         return $sections;
     }
 
-    public function includeScript(string $scriptPath)
+    public function getThemeDirectory()
     {
-        $scriptTag = new Tag\Script(['src' => $this->getThemeUrl() . $scriptPath]);
-        return (string) $scriptTag;
+        return C3_THEMES_DIR . $this->structure->directory . '/';
+    }
+
+    public function getThemeUrl()
+    {
+        return C3_THEMES_URL . $this->structure->directory . '/';
+    }
+
+    public function includeScript(string $scriptPath, bool $defer = true)
+    {
+        $scriptTag = new Tag\Script(['src' => $this->getThemeUrl() . $scriptPath, 'defer' => $defer]);
+        return (string) $scriptTag . "\n";
     }
 
     public function includeStyle(string $stylePath)
     {
         $styleTag = new Tag\Style(['href' => $this->getThemeUrl() . $stylePath]);
-        return (string) $styleTag;
+        return (string) $styleTag . "\n";
     }
 
     public function view()
@@ -108,32 +92,20 @@ class Theme
         $template = $this->buildTemplate();
         $fileName = 'pages/' . $this->structure->currentPage->filename;
         $header = Header::singleton();
-        $footer = Footer::singleton();
         $values = $this->getContent();
 
         $values['header'] = $header->view();
-        $values['footer'] = $footer->view();
         $values['pageTitle'] = $header->pageTitle;
         $values['themeUrl'] = $this->getThemeUrl();
         $values['themeDirectory'] = $this->getThemeDirectory();
         return $template->render($fileName, $values);
     }
 
-    public function getThemeDirectory()
-    {
-        return C3_DIR . 'resources/themes/' . $this->structure->directory . '/';
-    }
-
-    public function getThemeUrl()
-    {
-        return C3_URL . 'resources/themes/' . $this->structure->directory . '/';
-    }
-
     private function buildTemplate()
     {
         $template = new Template($this->getThemeDirectory());
         $includeScript = function($args) {
-            return $this->includeScript($args[0]);
+            return $this->includeScript($args[0], $args[1] ?? true);
         };
         $template->registerFunction('includeScript', $includeScript);
         $includeStyle = function($args) {
@@ -141,6 +113,27 @@ class Theme
         };
         $template->registerFunction('includeStyle', $includeStyle);
         return $template;
+    }
+
+    private function loadStructure(string $page = null)
+    {
+        $this->structure = new Structure;
+        $filePath = C3_THEMES_DIR . $this->themeName . '/structure.json';
+        if (!is_file($filePath)) {
+            throw new FileNotFound($filePath);
+        }
+        $structureJson = file_get_contents($filePath);
+        $structureObj = json_decode($structureJson);
+
+        $this->structure->setTitle($structureObj->title);
+        $this->structure->setDirectory($this->themeName);
+        $this->structure->setDescription($structureObj->description);
+        $this->structure->setScreenshot($structureObj->screenshot);
+        $this->structure->setPages($structureObj->pages);
+        $this->structure->setDefaultPage($structureObj->defaultPage);
+        if ($page && $this->structure->pageExists($page)) {
+            $this->structure->setCurrentPage($page);
+        }
     }
 
 }

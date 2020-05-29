@@ -43,6 +43,9 @@ abstract class Value
 
             case 'string':
                 return new StringValue($value, $template);
+
+            case 'boolean':
+                return new BoolValue($value, $template);
         }
     }
 

@@ -6,12 +6,12 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-function DashboardLoader(string $fileName, string $directory)
+function DashboardLoader(string $filename, string $directory)
 {
-    require_once C3_DIR . 'resources/dashboards/' . $directory . '/src/' . $fileName . '.php';
+    require_once C3_DASHBOARDS_DIR . $directory . '/src/' . $filename . '.php';
 }
 
-function PluginLoader(string $fileName, string $directory)
+function PluginLoader(string $filename, string $directory)
 {
-    require_once C3_DIR . 'resources/plugins/' . $directory . '/src/' . $fileName . '.php';
+    require_once C3_PLUGINS_DIR . $directory . '/src/' . $filename . '.php';
 }

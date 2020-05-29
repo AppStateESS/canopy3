@@ -48,7 +48,7 @@ class Template
         $this->registeredFunctions[$functionName] = $functionCode;
     }
 
-    public function render(string $fileName, array $values,
+    public function render(string $fileName, array $values = null,
             $emptyWarning = false)
     {
         $fileName = self::htmlSuffix($fileName);
@@ -56,7 +56,9 @@ class Template
         if (!is_file($filePath)) {
             throw new \Canopy3\Exception\FileNotFound($filePath);
         }
-
+        if (is_null($values)) {
+            $values = [];
+        }
         $t = new ContentStack($this, $values, $emptyWarning);
 
         return self::captureContent($t, $filePath);

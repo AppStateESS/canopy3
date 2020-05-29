@@ -14,7 +14,7 @@ use Canopy3\Tag;
 class Meta extends Tag
 {
 
-    public function __construct(array $params = null, string $tagName = null)
+    public function __construct(array $attributes = null, string $tagName = null)
     {
         parent::__construct(['name' => '', 'content' => '']);
     }

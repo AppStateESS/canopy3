@@ -10,9 +10,9 @@ namespace Canopy3\Tag;
 class Style extends Link
 {
 
-    public function __construct(array $params = null, string $tagName = null)
+    public function __construct(array $attributes = null, string $tagName = null)
     {
-        parent::__construct(['rel' => 'stylesheet', 'type' => 'text/css', 'href' => $params['href'] ?? null]);
+        parent::__construct(['rel' => 'stylesheet', 'type' => 'text/css', 'href' => $attributes['href'] ?? null]);
         $this->tagName = 'link';
     }
 

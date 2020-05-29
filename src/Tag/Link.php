@@ -10,9 +10,9 @@ namespace Canopy3\Tag;
 class Link extends \Canopy3\Tag
 {
 
-    public function __construct(array $params = null, string $tagName = null)
+    public function __construct(array $attributes = null, string $tagName = null)
     {
-        parent::__construct(['rel' => $params['rel'] ?? '', 'type' => $params['type'] ?? null, 'href' => $params['href'] ?? null]);
+        parent::__construct(['rel' => $attributes['rel'] ?? '', 'type' => $attributes['type'] ?? null, 'href' => $attributes['href'] ?? null]);
     }
 
 }

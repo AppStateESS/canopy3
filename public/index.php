@@ -6,15 +6,18 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
+$dbConfigFound = $urlConfigFound = true;
+
 try {
     require_once '../server.php';
 } catch (\Canopy3\Exception\FileNotFound $e) {
-    // The config/url.php is missing. Create one.
-    echo \Dashboard\CreateUrl\Form::view();
+    $urlConfigFound = false;
 }
+$dbConfigFound = is_file(C3_DIR . 'config/db.php');
 
-if (!is_file(C3_DIR . 'config/db.php')) {
-
+if (!$urlConfigFound || !$dbConfigFound) {
+    $setup = new \Dashboard\Setup\Setup;
+    $setup->view();
 } else {
-    echo 'dashboard';
+    echo 'Admin dashboard is a go!';
 }

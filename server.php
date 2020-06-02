@@ -23,9 +23,7 @@ require_once C3_DIR . 'vendor/autoload.php';
  */
 require_once C3_DIR . 'src/AutoLoader.php';
 
-$systemConfig = C3_DIR . 'config/system.php';
-if (is_file($systemConfig)) {
-    require_once $systemConfig;
-} else {
-    throw new \Canopy3\Exception\FileNotFound($systemConfig);
+$resourceConfig = C3_DIR . 'config/resourceUrl.php';
+if (is_file($resourceConfig)) {
+    require_once $resourceConfig;
 }

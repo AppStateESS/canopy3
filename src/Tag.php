@@ -14,14 +14,14 @@ class Tag
 
     public ?string $child = null;
     protected array $attributes = [];
+    protected array $allowed = [];
     protected string $tagName;
-    protected array $boolAttributes = [];
 
     /**
-     * If $singleton == false, start and end tags are used.
+     * If $selfClosing == false, start and end tags are used.
      * @var type
      */
-    protected bool $singleton = false;
+    protected bool $selfClosing = false;
 
     public function __call(string $attributeName, array $attributeValues)
     {
@@ -46,9 +46,9 @@ class Tag
         return $this->print();
     }
 
-    public function setBoolAttribute(string $attributeName, $status = true)
+    public function setChild(string $child)
     {
-        $this->boolAttributes[$attributeName] = $status;
+        $this->child = $child;
     }
 
     public function setAttribute(string $attributeName, string $value)
@@ -68,7 +68,7 @@ class Tag
 
     public function print()
     {
-        if (is_null($this->child) && $this->singleton) {
+        if (is_null($this->child) && $this->selfClosing) {
             return <<<EOF
 <{$this->tagName}{$this->listAttributes()}/>
 EOF;
@@ -88,26 +88,20 @@ EOF;
 
     private function listAttributes()
     {
-        if (empty($this->attributes) && empty($this->boolAttributes)) {
+        if (empty($this->attributes)) {
             return null;
         }
 
-        if (!empty($this->attributes)) {
-            foreach ($this->attributes as $attribute => $value) {
-                if (!is_null($value)) {
+        foreach ($this->attributes as $attribute => $value) {
+            if (!is_null($value)) {
+                if ($value === true) {
+                    $attributeList[] = $attribute;
+                } else {
                     $attributeList[] = "$attribute=\"$value\"";
                 }
             }
         }
-
-        if (!empty($this->boolAttributes)) {
-            foreach ($this->boolAttributes as $attributeName => $status) {
-                if ($status) {
-                    $attributeList[] = $attributeName;
-                }
-            }
-        }
-        return ' ' . implode(' ', $attributeList);
+        return empty($attributeList) ? null : ' ' . implode(' ', $attributeList);
     }
 
 }

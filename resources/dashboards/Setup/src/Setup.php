@@ -98,10 +98,11 @@ EOF;
     {
         $header = Header::singleton();
         $header->setPageTitle('Create System Config');
-        $header->addScript(self::$javascriptUrl . 'updateResource.js');
+        $header->addScript(self::$javascriptUrl . 'updateResource.js',
+                ['defer' => true]);
+        $header->addScriptValue('resourceUrl', C3_RESOURCES_URL);
         $values['c3Dir'] = C3_DIR;
         $values['configWritable'] = is_writable(C3_DIR . 'config/');
-        $values['resourceUrl'] = C3_RESOURCES_URL;
         return $this->wrapper('Create System File',
                         self::$template->render('CreateSystemConfig', $values));
         return self::$template->render('Wrapper', $values);

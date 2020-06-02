@@ -17,6 +17,7 @@ class Header
 
     private static $header;
     private array $scripts = [];
+    private array $scriptValues = [];
     private StringVar $siteTitle;
     private StringVar $pageTitle;
 
@@ -35,10 +36,20 @@ class Header
         throw new InaccessibleProperty(__class__, $varName);
     }
 
-    public function addScript(string $src, bool $defer = true)
+    public function addScript(string $src, ?array $attributes = null)
     {
-        $script = new \Canopy3\Tag\Script(['src' => $src, 'defer' => $defer]);
+        $allAttributes = ['src' => $src];
+
+        if (!is_null($attributes)) {
+            $allAttributes = $allAttributes + $attributes;
+        }
+        $script = new \Canopy3\Tag\Script($allAttributes);
         $this->scripts[] = $script;
+    }
+
+    public function addScriptValue(string $varName, $value)
+    {
+        $this->scriptValues[$varName] = $value;
     }
 
     public function getScripts()
@@ -47,6 +58,26 @@ class Header
             return null;
         }
         return implode("\n", $this->scripts);
+    }
+
+    public function getScriptValues()
+    {
+        if (empty($this->scriptValues)) {
+            return null;
+        }
+
+        foreach ($this->scriptValues as $varName => $value) {
+            if (is_array($value) || is_object($value)) {
+                $strValue = json_encode($value);
+            } elseif (is_numeric($value)) {
+                $strValue = $value;
+            } else {
+                $strValue = "'" . str_replace("'", "\'", $value) . "'";
+            }
+            $values[] = "const $varName = $strValue";
+        }
+        $tag = new \Canopy3\Tag\Script(null, null, implode("\n", $values));
+        return (string) $tag;
     }
 
     public static function singleton(): object
@@ -82,6 +113,7 @@ class Header
     {
         $values[] = (string) Robots::singleton();
         $values[] = $this->getFullTitle();
+        $values[] = $this->getScriptValues();
         if ($scripts = $this->getScripts()) {
             $values[] = $scripts;
         }

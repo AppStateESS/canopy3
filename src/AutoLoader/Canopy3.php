@@ -14,9 +14,5 @@ function Canopy3Loader(string $fileName, string $directory)
     }
     $pathStack[] = $fileName . '.php';
     $path = implode('', $pathStack);
-
-    if (!is_file($path)) {
-        throw new \Exception("File [$path] not found for class [$fileName]");
-    }
-    require_once $path;
+    return $path;
 }

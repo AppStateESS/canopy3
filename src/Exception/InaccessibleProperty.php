@@ -7,7 +7,7 @@
 
 namespace Canopy3\Exception;
 
-class InaccessibleProperty extends ExceptionAbstract
+class InaccessibleProperty extends \Exception
 {
 
     public function __construct($className, $valueName)

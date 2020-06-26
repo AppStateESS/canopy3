@@ -14,8 +14,7 @@ class WrongVariableType extends ExceptionAbstract
 
     public function __construct(string $expectedType, string $wrongType)
     {
-        $message = "Expected variable type $expectType but received $wrongType";
-        parent::__construct($message);
+        parent::__construct("Expected variable type $expectType but received $wrongType");
     }
 
 }

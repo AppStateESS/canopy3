@@ -19,11 +19,11 @@ define('C3_PLUGINS_DIR', C3_DIR . 'resources/plugins/');
 require_once C3_DIR . 'vendor/autoload.php';
 
 /**
- * Canopy3 autoloader
+ * Canopy3 and resource autoloader
  */
 require_once C3_DIR . 'src/AutoLoader.php';
 
-$resourceConfig = C3_DIR . 'config/resourceUrl.php';
+$resourceConfig = C3_DIR . 'config/resourcesUrl.php';
 if (is_file($resourceConfig)) {
     require_once $resourceConfig;
 }

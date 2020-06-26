@@ -1,8 +1,11 @@
-let resourceUrl = '/sample/dir/'
-const resourceUrlNode = document.getElementById('resourceUrl')
-const saveUrlNode = document.getElementById('saveUrl')
-console.log(saveUrlNode)
-saveUrlNode.innerText = resourceUrl
-resourceUrlNode.addEventListener('keyup', (e) => {
-  saveUrlNode.innerText = resourceUrlNode.value
+const resourcesUrlNode = document.getElementById('resourcesUrl')
+const saveUrlNode = document.getElementsByClassName('saveUrl')
+const urlLength = saveUrlNode.length
+
+for (let i = 0; i < urlLength; i++) {
+  saveUrlNode[i].innerText = resourcesUrl
+}
+
+resourceUrlNode.addEventListener('keyup', () => {
+  saveUrlNode.innerText = resourcesUrlNode.value
 })

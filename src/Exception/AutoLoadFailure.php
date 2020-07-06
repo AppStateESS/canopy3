@@ -12,7 +12,7 @@ class AutoLoadFailure extends \Exception
 
     public function __construct(string $nameSpaceString, string $classFilePath)
     {
-        parent::_construct("Could not autoload class [$nameSpaceString] by requiring [$classFilePath]");
+        parent::__construct("Could not autoload class [$nameSpaceString] by requiring [$classFilePath]");
     }
 
 }

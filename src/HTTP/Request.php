@@ -23,7 +23,6 @@ class Request
 
     private function __construct()
     {
-        Server::getCurrentUri();
         $this->loadRequestUri();
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
         $this->loadData();
@@ -165,6 +164,10 @@ class Request
         var_dump($this);
     }
 
+    /**
+     *
+     * @return Request
+     */
     public function singleton()
     {
         if (empty(self::$singletonObj)) {

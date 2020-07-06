@@ -12,11 +12,14 @@ namespace Canopy3;
 use Canopy3\Template\ContentStack;
 use Canopy3\Exception\ExpectedType;
 
+if (!defined('C3_TEMPLATE_EMPTY_WARNING_DEFAULT')) {
+    define('C3_TEMPLATE_EMPTY_WARNING_DEFAULT', false);
+}
+
 class Template
 {
 
     private string $path;
-    private array $values = [];
     private array $registeredFunctions = [];
 
     public function __construct(string $path = null)
@@ -49,7 +52,7 @@ class Template
     }
 
     public function render(string $fileName, array $values = null,
-            $emptyWarning = false)
+            bool $emptyWarning = C3_TEMPLATE_EMPTY_WARNING_DEFAULT): string
     {
         $fileName = self::htmlSuffix($fileName);
         $filePath = $this->path . $fileName;

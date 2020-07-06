@@ -12,6 +12,7 @@ define('C3_DIR', __DIR__ . '/');
 define('C3_THEMES_DIR', C3_DIR . 'resources/themes/');
 define('C3_DASHBOARDS_DIR', C3_DIR . 'resources/dashboards/');
 define('C3_PLUGINS_DIR', C3_DIR . 'resources/plugins/');
+define('C3_DATA_DIR', C3_DIR . 'data/');
 
 /**
  * Composer autoloader
@@ -22,6 +23,10 @@ require_once C3_DIR . 'vendor/autoload.php';
  * Canopy3 and resource autoloader
  */
 require_once C3_DIR . 'src/AutoLoader.php';
+
+require_once C3_DIR . 'src/GlobalFunctions.php';
+
+requireConfigFile('config/system');
 
 $resourceConfig = C3_DIR . 'config/resourcesUrl.php';
 if (is_file($resourceConfig)) {

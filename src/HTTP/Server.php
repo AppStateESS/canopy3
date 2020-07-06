@@ -10,21 +10,12 @@
 
 namespace Canopy3\HTTP;
 
+if (!defined('C3_DEVELOPMENT_MODE')) {
+    define('C3_DEVELOPMENT_MODE', false);
+}
+
 class Server
 {
-
-    public static function getCurrentUri($with_directory = true)
-    {
-        $httpHost = self::getHost();
-        $address[] = '//';
-        $address[] = $httpHost;
-        if ($with_directory) {
-            $address[] = dirname($_SERVER['PHP_SELF']);
-        }
-
-        $url = preg_replace('@\\\@', '/', implode('', $address)) . '/';
-        return $url;
-    }
 
     public static function __callStatic(string $methodName, array $arguments)
     {
@@ -41,17 +32,17 @@ class Server
         return self::getRequestVar($serverVal);
     }
 
-    /**
-     * Returns request information following the site URI.
-     * @return string
-     */
-    public static function getRequestUriOnly()
+    public static function getCurrentUri($with_directory = true)
     {
-        $phpSelf = self::getPhpSelf();
-        $uri = self::getRequestUri();
-        $rootUri = substr($self, 0, strrpos($phpSelf, '/'));
-        $requestUri = preg_replace("@^$rootUri/@", '', $uri);
-        return empty($requestUri) ? false : $requestUri;
+        $httpHost = self::getHost();
+        $address[] = '//';
+        $address[] = $httpHost;
+        if ($with_directory) {
+            $address[] = dirname($_SERVER['PHP_SELF']);
+        }
+
+        $url = preg_replace('@\\\@', '/', implode('', $address)) . '/';
+        return $url;
     }
 
     public static function getHost()
@@ -62,6 +53,19 @@ class Server
             throw new \Exception('$_SERVER[HTTP_HOST] superglobal does not exist');
         }
         return $httpHost;
+    }
+
+    /**
+     * Returns request information following the site URI.
+     * @return string
+     */
+    public static function getRequestUriOnly()
+    {
+        $phpSelf = self::getPhpSelf();
+        $uri = self::getRequestUri();
+        $rootUri = substr($phpSelf, 0, strrpos($phpSelf, '/'));
+        $requestUri = preg_replace("@^$rootUri/@", '', $uri);
+        return empty($requestUri) ? false : $requestUri;
     }
 
     private static function getRequestVar(string $varName)
@@ -76,8 +80,18 @@ class Server
                 return filter_input(INPUT_SERVER, $varName, FILTER_VALIDATE_INT);
 
             default:
-                throw new \Exception("Unknown SERVER variable: $varname");
+                throw new \Exception("Unknown SERVER variable: $varName");
         }
+    }
+
+    /**
+     * Returns whether installation in development mode. This function should
+     * be used instead of the constant in case it has not been defined.
+     * @return bool
+     */
+    public static function isDevelopmentMode(): bool
+    {
+        return C3_DEVELOPMENT_MODE;
     }
 
 }

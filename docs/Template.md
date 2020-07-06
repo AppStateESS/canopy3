@@ -46,6 +46,26 @@ Jobs.html
 <p>It is currently <?= $t->timestamp->asDate('%c') ?></p>
 ```
 
+If you want show a value with surrounding content but only wish to do so if the value exists, there are two methods.
+
+The first method is to test the value's existence.
+
+```
+<?php if (isset($t->greeting)):?>
+	<p class="special-greeting"><?=$t->greeting?></p>
+<?php endif;?>
+```
+
+Alternatively, you may use the wrap() function.
+
+```
+<?=$t->wrap('greeting', '<p class="special-greeting">', '</p>')?>
+```
+
+The first parameter is the name of the variable. Second and third parameter are what will print on the left and right respectively.
+
+## Working with array values
+
 Array values can be looped through in a couple of ways.
 
 If you want the values to fill out a table, you can use the `asTableRows` function.

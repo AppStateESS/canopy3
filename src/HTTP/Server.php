@@ -80,7 +80,7 @@ class Server
                 return filter_input(INPUT_SERVER, $varName, FILTER_VALIDATE_INT);
 
             default:
-                throw new \Exception("Unknown SERVER variable: $varName");
+                throw new \Exception("Unknown SERVER variable '$varName'");
         }
     }
 

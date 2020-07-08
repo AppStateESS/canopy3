@@ -7,13 +7,13 @@
 
 namespace Canopy3;
 
-use Canopy3\Request;
+use Canopy3\HTTP\Request;
 use Canopy3\Exception\UnknownRequestMethod;
 
 abstract class Controller
 {
 
-    protected \Canopy3\Request $request;
+    protected \Canopy3\HTTP\Request $request;
 
     public function __construct()
     {

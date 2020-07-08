@@ -17,20 +17,19 @@ use Canopy3\Theme;
 use Canopy3\Role;
 use Canopy3\ErrorPage;
 
-$theme = Theme::singleton();
-$router = Router::singleton();
-
-$dbConfigFound = is_file(C3_DIR . 'config/db.php');
-
-if (!defined('C3_RESOURCES_URL') || !$dbConfigFound) {
-    $router->setResourceType('dashboard');
-    $router->setLibrary('Setup');
-} else {
-    require_once C3_DIR . 'config/db.php';
-    // determine router action from url
-}
-
 try {
+    $theme = Theme::singleton();
+    $router = Router::singleton();
+
+    $dbConfigFound = is_file(C3_DIR . 'config/db.php');
+
+    if (!defined('C3_RESOURCES_URL') || !$dbConfigFound) {
+        $controller = new \Dashboard\Setup\Controller\Setup;
+        $router->setController($controller);
+    } else {
+        require_once C3_DIR . 'config/db.php';
+        // determine router action from url
+    }
     $router->execute();
 } catch (\Canopy3\Exception\CodedException $e) {
     echo ErrorPage::codedView($e);

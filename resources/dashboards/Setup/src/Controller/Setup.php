@@ -9,7 +9,7 @@ namespace Dashboard\Setup\Controller;
 
 use Canopy3\Template;
 use Canopy3\HTTP\Header;
-use Canopy3\Request;
+use Canopy3\HTTP\Request;
 
 class Setup extends \Canopy3\Controller
 {
@@ -39,7 +39,7 @@ class Setup extends \Canopy3\Controller
     private function defineDefaultUrl()
     {
         $url = preg_replace('@public/$@', '',
-                \Canopy3\HTTP\Server::getCurrentUrl());
+                \Canopy3\HTTP\Server::getCurrentUri());
         define('C3_RESOURCES_URL', $url . 'resources/');
         define('C3_DASHBOARDS_URL', C3_RESOURCES_URL . 'dashboards/');
         define('C3_PLUGINS_URL', C3_RESOURCES_URL . 'plugins/');

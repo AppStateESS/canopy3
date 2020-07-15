@@ -14,12 +14,16 @@ use Canopy3\Template;
 class ArrayValue extends Value
 {
 
-    public function asTableRows(array $options)
+    public function asTableRows(array $options = [])
     {
         $rowClass = null;
         $order = null;
+        $emptyWarning = false;
 
         extract($options);
+        if (empty($this->value)) {
+            return $emptyWarning ? '<!-- Empty value array -->' : '';
+        }
         foreach ($this->value as $key => $row) {
             $table[] = "<tr class=\"$rowClass\">";
             if (!empty($order)) {

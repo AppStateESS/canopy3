@@ -20,9 +20,12 @@ use Canopy3\HTTP\Server;
 use Canopy3\Exception\CodedException;
 use Canopy3\Exception\DashboardControllerNotFound;
 use Canopy3\Exception\PluginControllerNotFound;
+use Canopy3\Exception\UnknownRequestMethod;
 
 class Router
 {
+
+    private const allowedMethods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'];
 
     private static \Canopy3\Router $singleton;
 
@@ -49,7 +52,7 @@ class Router
      *
      * @var string
      */
-    private string $command = 'view';
+    private ?string $command = null;
 
     /**
      * Name of page, file, image viewed.
@@ -100,7 +103,7 @@ class Router
         $this->parseRequest();
         if (isset($this->controllerName)) {
             $this->loadController();
-            $this->loadCommand();
+            //$this->loadCommand();
         }
     }
 
@@ -145,6 +148,11 @@ class Router
         }
     }
 
+    public function setCommand(string $command)
+    {
+        $this->command = $command;
+    }
+
     public function setControllerClassName(string $controllerClassName)
     {
         $this->controllerClassName = $controllerClassName;
@@ -166,21 +174,83 @@ class Router
      */
     public function execute()
     {
-        $response = $this->controller->{$this->command}();
+        $restfulCommand = $this->buildRestfulCommand();
+
+        $response = $this->controller->{$restfulCommand}();
+        return is_a($response, 'Canopy3\HTTP\Response') ? $response : Response::themeHtml($response);
+    }
+
+    private function buildRestfulCommand()
+    {
+        $method = Request::singleton()->getMethod();
+
+        if (!$this->methodAllowed($method)) {
+            throw new UnknownRequestMethod($method);
+        }
+
+        $command = $this->command;
+        if (empty($command)) {
+            throw new CodedException('Router command is unassigned', 500);
+        }
+        if ($method === 'GET') {
+            if (empty($command)) {
+                if ($this->resourceId > 0) {
+
+                }
+            }
+        }
+        $restState = ucwords(strtolower($method));
+        var_dump(get_defined_vars());
+        exit;
+
+        switch ($method) {
+            case 'GET':
+                $response = $this->get();
+                break;
+            case 'HEAD':
+                $response = $this->head();
+                break;
+            case 'POST':
+                $response = $this->post();
+                break;
+            case 'PUT':
+                $response = $this->put();
+                break;
+            case 'DELETE':
+                $response = $this->delete();
+                break;
+            case 'OPTIONS':
+                $response = $this->options();
+                break;
+            case 'PATCH':
+                $response = $this->patch();
+                break;
+            default:
+                break;
+        }
     }
 
     private function loadResourceCommand(array $requestUriArray)
     {
+        $method = Request::singleton()->getMethod();
         $segment = array_shift($requestUriArray);
-        if ($segment === null) {
-            $this->command = 'list';
-        } elseif (is_numeric($segment)) {
-            $this->setResourceId($segment);
-            $command = array_shift($requestUriArray);
-            if ($command === null) {
+        if ($segment === null && $method === 'GET') {
+            if ($this->resourceId > 0) {
                 $this->command = 'view';
+            } else {
+                $this->command = 'list';
             }
+        } elseif (is_numeric($segment) && (int) $segment > 0 && $this->resourceId > 0) {
+            $this->setResourceId($segment);
+            $this->loadResourceCommand($requestUriArray);
+        } else {
+            $this->command = $segment;
         }
+    }
+
+    public function methodAllowed(string $method): bool
+    {
+        return in_array(strtoupper($method), self::allowedMethods);
     }
 
     /**
@@ -196,6 +266,7 @@ class Router
     private function parseRequest()
     {
         $requestUriArray = $this->getRequestUriArray();
+
         if ($requestUriArray == false) {
             return;
         }
@@ -219,8 +290,8 @@ class Router
      */
     private function getRequestUriArray()
     {
-        $requestUri = Server::getRequestUriOnly();
-        if ($requestUri === false) {
+        $requestUri = preg_replace('/\?.*$/', '', Server::getRequestUriOnly());
+        if ($requestUri === false || $requestUri === 'index.php') {
             return false;
         }
         $cleanedUri = str_replace('//', '/',

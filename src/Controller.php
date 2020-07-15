@@ -8,7 +8,7 @@
 namespace Canopy3;
 
 use Canopy3\HTTP\Request;
-use Canopy3\Exception\UnknownRequestMethod;
+use Canopy3\Exception\RESTfulControlNotAssigned;
 
 abstract class Controller
 {
@@ -22,68 +22,42 @@ abstract class Controller
 
     public function execute()
     {
-        $method = strtoupper($this->request->getMethod());
-        switch ($method) {
-            case 'GET':
-                $response = $this->get();
-                break;
-            case 'HEAD':
-                $response = $this->head();
-                break;
-            case 'POST':
-                $response = $this->post();
-                break;
-            case 'PUT':
-                $response = $this->put();
-                break;
-            case 'DELETE':
-                $response = $this->delete();
-                break;
-            case 'OPTIONS':
-                $response = $this->options();
-                break;
-            case 'PATCH':
-                $response = $this->patch();
-                break;
-            default:
-                throw new UnknownRequestMethod($method);
-                break;
-        }
+
     }
 
-    public function get()
+    public function getHtml()
     {
-
+        throw new RESTfulControlNotAssigned('getHtml');
     }
 
     public function head()
     {
-
+        throw new RESTfulControlNotAssigned('head');
     }
 
     public function post()
     {
-
+        throw new RESTfulControlNotAssigned('post');
     }
 
     public function put()
     {
-
+        throw new RESTfulControlNotAssigned('put');
     }
 
     public function delete()
     {
-
+        throw new RESTfulControlNotAssigned('delete');
     }
 
     public function options()
     {
-
+        throw new RESTfulControlNotAssigned('options');
     }
 
     public function patch()
     {
-
+        throw new RESTfulControlNotAssigned('patch');
     }
 
 }

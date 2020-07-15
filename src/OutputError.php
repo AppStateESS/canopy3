@@ -8,18 +8,35 @@
 namespace Canopy3;
 
 use Canopy3\HTTP\Server;
+use Canopy3\HTTP\Response;
+use Canopy3\HTTP\Request;
+use Canopy3\Exception\CodedException;
 
-class ErrorPage
+class OutputError
 {
 
     static \Canopy3\Template $template;
 
-    public static function codedView(Exception\CodedException $e)
+    public static function codedException(CodedException $e)
+    {
+        if (Request::singleton()->isAjax()) {
+            return self::codedHtmlView($e);
+        } else {
+            return self::codedJsonView($e);
+        }
+    }
+
+    private static function codedHtmlView(CodedException $e)
     {
         $values = self::getDebugValues($e);
         $code = $e->getCode();
         $template = self::getTemplate();
-        return $template->render($code . '.html', $values);
+        return Response::getHtml($template->render($code . '.html', $values));
+    }
+
+    private static function codedJsonView(CodedException $e)
+    {
+        throw $e;
     }
 
     private static function getDebugValues(\Exception $e)
@@ -42,7 +59,7 @@ class ErrorPage
         return self::$template ?? new Template(C3_DIR . 'src/ErrorPage/templates/');
     }
 
-    public static function view(\Exception $e)
+    public static function exception(\Exception $e)
     {
         $values = self::getDebugValues($e);
         $template = self::getTemplate();

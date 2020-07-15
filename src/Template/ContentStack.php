@@ -80,7 +80,7 @@ class ContentStack
      * @param type $fileName
      * @return string
      */
-    public function include($fileName): string
+    public function include(string $fileName): string
     {
         return $this->template->render($fileName, $this->values);
     }

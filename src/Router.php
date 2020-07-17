@@ -107,62 +107,6 @@ class Router
         }
     }
 
-    public function getValues()
-    {
-        return [
-            'method' => $this->method,
-            'resourceType' => $this->resourceType,
-            'controllerName' => $this->controllerName,
-            'library' => $this->library,
-            'command' => $this->command,
-            'isAjax' => $this->isAjax ? 'True' : 'False',
-            'dataTitle' => $this->dataTitle,
-            'resourceId' => $this->resourceId,
-        ];
-    }
-
-    public function setResourceType(string $resourceType)
-    {
-        if (!isset($this->resourceType) || $this->forceReassign) {
-            $this->resourceType = $resourceType;
-        } else {
-            throw new \RouterReassignException;
-        }
-    }
-
-    public function setLibrary(string $library)
-    {
-        if (!isset($this->library) || $this->forceReassign) {
-            $this->library = $library;
-        } else {
-            throw new \RouterReassignException;
-        }
-    }
-
-    public function setControllerName(string $controllerName)
-    {
-        if (is_null($this->controllerName) || $this->forceReassign) {
-            $this->controllerName = $controllerName;
-        } else {
-            throw new \RouterReassignException;
-        }
-    }
-
-    public function setCommand(string $command)
-    {
-        $this->command = $command;
-    }
-
-    public function setControllerClassName(string $controllerClassName)
-    {
-        $this->controllerClassName = $controllerClassName;
-    }
-
-    public function setController(object $controller)
-    {
-        $this->controller = $controller;
-    }
-
 //(dashboard|plugin)/Library/Controller/Command|ID[/Command]
 //file/document.pdf
 //image/friend.jpg
@@ -178,6 +122,73 @@ class Router
 
         $response = $this->controller->{$restfulCommand}();
         return is_a($response, 'Canopy3\HTTP\Response') ? $response : Response::themeHtml($response);
+    }
+
+    public function getValues()
+    {
+        return [
+            'method' => $this->method,
+            'resourceType' => $this->resourceType,
+            'controllerName' => $this->controllerName,
+            'library' => $this->library,
+            'command' => $this->command,
+            'isAjax' => $this->isAjax ? 'True' : 'False',
+            'dataTitle' => $this->dataTitle,
+            'resourceId' => $this->resourceId,
+        ];
+    }
+
+    public function loadController()
+    {
+        $controller = new $this->controllerName;
+        $this->setController($controller);
+    }
+
+    public function methodAllowed(string $method): bool
+    {
+        return in_array(strtoupper($method), self::allowedMethods);
+    }
+
+    public function setCommand(string $command)
+    {
+        $this->command = $command;
+    }
+
+    public function setController(object $controller)
+    {
+        $this->controller = $controller;
+    }
+
+    public function setControllerClassName(string $controllerClassName)
+    {
+        $this->controllerClassName = $controllerClassName;
+    }
+
+    public function setControllerName(string $controllerName)
+    {
+        if (is_null($this->controllerName) || $this->forceReassign) {
+            $this->controllerName = $controllerName;
+        } else {
+            throw new \RouterReassignException;
+        }
+    }
+
+    public function setLibrary(string $library)
+    {
+        if (!isset($this->library) || $this->forceReassign) {
+            $this->library = $library;
+        } else {
+            throw new \RouterReassignException;
+        }
+    }
+
+    public function setResourceType(string $resourceType)
+    {
+        if (!isset($this->resourceType) || $this->forceReassign) {
+            $this->resourceType = $resourceType;
+        } else {
+            throw new \RouterReassignException;
+        }
     }
 
     private function buildRestfulCommand()
@@ -230,6 +241,46 @@ class Router
         }
     }
 
+    /**
+     * Returns an array from a slashed uri. Removes trailing and double slashes.
+     * @return array
+     */
+    private function getRequestUriArray()
+    {
+        $requestUri = preg_replace('/\?.*$/', '', Server::getRequestUriOnly());
+        if ($requestUri === false || $requestUri === 'index.php') {
+            return false;
+        }
+        $cleanedUri = str_replace('//', '/',
+                preg_replace('@/$@', '', $requestUri));
+        return explode('/', $cleanedUri);
+    }
+
+    /**
+     * Loads the a controller based on the results of parseRequest.
+     * @throws CodedException
+     */
+    private function loadDataControllerClassName()
+    {
+        switch ($this->resourceType) {
+            case 'file':
+                $this->controllerClassName = 'Canopy3\\DataController\\File';
+                break;
+
+            case 'page':
+                $this->controllerClassName = 'Canopy3\\DataController\\Page';
+                break;
+
+            case 'image':
+                $this->controllerClassName = 'Canopy3\\DataController\\Image';
+                break;
+
+            default:
+                throw new CodedException('Router resource type missing or unknown',
+                        404);
+        }
+    }
+
     private function loadResourceCommand(array $requestUriArray)
     {
         $method = Request::singleton()->getMethod();
@@ -248,9 +299,32 @@ class Router
         }
     }
 
-    public function methodAllowed(string $method): bool
+    /**
+     *
+     * @throws DashboardControllerNotFound
+     * @throws PluginControllerNotFound
+     */
+    private function loadResourceControllerClassName()
     {
-        return in_array(strtoupper($method), self::allowedMethods);
+        switch ($this->resourceType) {
+            case 'dashboard':
+                $this->controllerClassName = "dashboard\\{$this->library}\{$this->controllerName}";
+                if (!class_exists($this->controllerClassName)) {
+                    throw new DashboardControllerNotFound($this->controllerName);
+                }
+                break;
+
+            case 'plugin':
+                $this->controllerClassName = "plugin\\{$this->library}\{$this->controllerName}";
+                if (!class_exists($this->controllerClassName)) {
+                    throw new PluginControllerNotFound($this->controllerClassName);
+                }
+                break;
+
+            default:
+                throw new CodedException("Uknown resource controller $controllerName",
+                        404);
+        }
     }
 
     /**
@@ -284,21 +358,6 @@ class Router
         }
     }
 
-    /**
-     * Returns an array from a slashed uri. Removes trailing and double slashes.
-     * @return array
-     */
-    private function getRequestUriArray()
-    {
-        $requestUri = preg_replace('/\?.*$/', '', Server::getRequestUriOnly());
-        if ($requestUri === false || $requestUri === 'index.php') {
-            return false;
-        }
-        $cleanedUri = str_replace('//', '/',
-                preg_replace('@/$@', '', $requestUri));
-        return explode('/', $cleanedUri);
-    }
-
     private function parseResourceUri($requestUriArray)
     {
         if (empty($requireUriArray)) {
@@ -310,65 +369,6 @@ class Router
         } else {
             $this->controllerName = 'Controller';
         }
-    }
-
-    /**
-     * Loads the a controller based on the results of parseRequest.
-     * @throws CodedException
-     */
-    private function loadDataControllerClassName()
-    {
-        switch ($this->resourceType) {
-            case 'file':
-                $this->controllerClassName = 'Canopy3\\DataController\\File';
-                break;
-
-            case 'page':
-                $this->controllerClassName = 'Canopy3\\DataController\\Page';
-                break;
-
-            case 'image':
-                $this->controllerClassName = 'Canopy3\\DataController\\Image';
-                break;
-
-            default:
-                throw new CodedException('Router resource type missing or unknown',
-                        404);
-        }
-    }
-
-    /**
-     *
-     * @throws DashboardControllerNotFound
-     * @throws PluginControllerNotFound
-     */
-    private function loadResourceControllerClassName()
-    {
-        switch ($this->resourceType) {
-            case 'dashboard':
-                $this->controllerClassName = "dashboard\\{$this->library}\{$this->controllerName}";
-                if (!class_exists($this->controllerClassName)) {
-                    throw new DashboardControllerNotFound($this->controllerName);
-                }
-                break;
-
-            case 'plugin':
-                $this->controllerClassName = "plugin\\{$this->library}\{$this->controllerName}";
-                if (!class_exists($this->controllerClassName)) {
-                    throw new PluginControllerNotFound($this->controllerClassName);
-                }
-                break;
-
-            default:
-                throw new CodedException("Uknown resource controller $controllerName",
-                        404);
-        }
-    }
-
-    public function loadController()
-    {
-        $controller = new $this->controllerName;
-        $this->setController($controller);
     }
 
 }

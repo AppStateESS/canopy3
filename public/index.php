@@ -13,26 +13,22 @@ require_once '../server.php';
 require_once '../src/Router.php';
 
 use Canopy3\Router;
-use Canopy3\Theme;
 use Canopy3\Role;
-use Canopy3\ErrorPage;
+use Canopy3\OutputError;
+use Canopy3\HTTP\Response;
 
 try {
-    $theme = Theme::singleton();
     $router = Router::singleton();
 
-    $dbConfigFound = is_file(C3_DIR . 'config/db.php');
-
-    if (!defined('C3_RESOURCES_URL') || !$dbConfigFound) {
-        $controller = new \Dashboard\Setup\Controller\Setup;
-        $router->setController($controller);
-    } else {
-        require_once C3_DIR . 'config/db.php';
-        // determine router action from url
+    // Determines if setup is required
+    if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
+        require C3_DIR . 'src/PrepareSetup.php';
     }
-    $router->execute();
+
+    $response = $router->execute();
 } catch (\Canopy3\Exception\CodedException $e) {
-    echo ErrorPage::codedView($e);
+    $response = OutputError::codedException($e);
 } catch (\Exception $e) {
-    echo ErrorPage::view($e);
+    $response = OutputError::exception($e);
 }
+Response::execute($response);

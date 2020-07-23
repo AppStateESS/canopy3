@@ -32,6 +32,16 @@ class Server
         return self::getRequestVar($serverVal);
     }
 
+    /**
+     * Returns the number of milliseconds that have passed since current page
+     * access.
+     * @return int
+     */
+    public static function executionTime(): int
+    {
+        return time() - self::getRequestTime();
+    }
+
     public static function getCurrentUri($with_directory = true)
     {
         $httpHost = self::getHost();
@@ -82,6 +92,11 @@ class Server
             default:
                 throw new \Exception("Unknown SERVER variable '$varName'");
         }
+    }
+
+    public static function getRequestTime()
+    {
+        return (int) $_SERVER['REQUEST_TIME'];
     }
 
     /**

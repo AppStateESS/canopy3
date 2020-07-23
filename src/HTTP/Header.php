@@ -16,12 +16,13 @@ class Header
 {
 
     private static $header;
+    private int $httpResponseCode = 200;
     private array $scripts = [];
     private array $scriptValues = [];
     private StringVar $siteTitle;
     private StringVar $pageTitle;
 
-    public function __construct()
+    private function __construct()
     {
         $this->siteTitle = new StringVar;
         $this->pageTitle = new StringVar;
@@ -88,6 +89,11 @@ class Header
         return self::$header;
     }
 
+    public function setHttpResponseCode(int $code)
+    {
+        $this->httpResponseCode = $code;
+    }
+
     public function setSiteTitle($title)
     {
         $this->siteTitle->set($title);
@@ -118,6 +124,11 @@ class Header
             $values[] = $scripts;
         }
         return implode("\n", $values) . "\n";
+    }
+
+    public function sendHttpResponseCode()
+    {
+        http_response_code($this->httpResponseCode);
     }
 
 }

@@ -20,9 +20,9 @@ class OutputError
     public static function codedException(CodedException $e)
     {
         if (Request::singleton()->isAjax()) {
-            return self::codedHtmlView($e);
-        } else {
             return self::codedJsonView($e);
+        } else {
+            return self::codedHtmlView($e);
         }
     }
 
@@ -31,12 +31,32 @@ class OutputError
         $values = self::getDebugValues($e);
         $code = $e->getCode();
         $template = self::getTemplate();
-        return Response::getHtml($template->render($code . '.html', $values));
+        return Response::themedError($template->render($code . '.html', $values),
+                        $code);
     }
 
     private static function codedJsonView(CodedException $e)
     {
         throw $e;
+    }
+
+    /**
+     * This is an uncaught, unexpected exception. The assumption is something
+     * went so wrong we had a 500 server error.
+     * @param \Exception $e
+     * @return type
+     * @throws \Exception
+     */
+    public static function exception(\Exception $e)
+    {
+        HTTP\Header::singleton()->setHttpResponseCode(500);
+        if (Request::singleton()->isAjax()) {
+            throw $e;
+        } else {
+            $values = self::getDebugValues($e);
+            $template = self::getTemplate();
+            return Response::themedError($template->render('500.html', $values));
+        }
     }
 
     private static function getDebugValues(\Exception $e)
@@ -57,13 +77,6 @@ class OutputError
     private function getTemplate()
     {
         return self::$template ?? new Template(C3_DIR . 'src/ErrorPage/templates/');
-    }
-
-    public static function exception(\Exception $e)
-    {
-        $values = self::getDebugValues($e);
-        $template = self::getTemplate();
-        return $template->render('500.html', $values);
     }
 
     private function xdebug(\Exception $e): string

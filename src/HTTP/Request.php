@@ -20,14 +20,16 @@ class Request
     private RequestType $POST;
     private RequestType $PUT;
     private string $method;
+    private bool $isAjax;
     private string $requestUri;
 
     private const methodTypes = ['GET', 'DELETE', 'PATCH', 'POST', 'PUT'];
 
-    static private Request $singletonObj;
+    static private Request $singleton;
 
     private function __construct()
     {
+        $this->loadIsAjax();
         $this->loadRequestUri();
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
         if (!$this->allowedMethod($this->method)) {
@@ -55,9 +57,9 @@ class Request
      * header. JQUERY required for this.
      * @return boolean
      */
-    public static function isAjax()
+    public function isAjax()
     {
-        return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+        return $this->isAjax;
     }
 
     /**
@@ -143,16 +145,20 @@ class Request
         $this->GET->setValues($_GET);
     }
 
+    private function loadIsAjax()
+    {
+        $this->isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') || (isset($_SERVER['HTTP_CONTENT_TYPE']) && strpos($_SERVER['HTTP_CONTENT_TYPE'],
+                        'application/x-www-form-urlencoded') !== false);
+    }
+
     /**
      *
      * @return Request
      */
     public static function singleton()
     {
-        if (empty(self::$singletonObj)) {
-            self::$singletonObj = new self;
-        }
-        return self::$singletonObj;
+        self::$singleton ??= new self;
+        return self::$singleton;
     }
 
     private function loadRequestUri()

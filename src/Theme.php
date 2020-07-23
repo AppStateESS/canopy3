@@ -24,29 +24,18 @@ if (!defined('C3_DEFAULT_THEME')) {
 class Theme
 {
 
-    static \Canopy3\Theme $singleton;
-    //private array $sections; ??
     public string $themeName;
 
     /**
-     *
      * @var Canopy3\Theme\Structure
      */
     private Structure $structure;
 
-    private function __construct(string $themeName = C3_DEFAULT_THEME,
+    public function __construct(string $themeName = C3_DEFAULT_THEME,
             string $page = null)
     {
         $this->themeName = trim($themeName);
         $this->loadStructure($page);
-    }
-
-    public static function singleton()
-    {
-        if (empty(self::$singleton)) {
-            self::$singleton = new self;
-        }
-        return self::$singleton;
     }
 
     public function addContent(string $content, string $section = null)
@@ -72,6 +61,9 @@ class Theme
 
     public function getThemeUrl()
     {
+        if (!defined('C3_THEMES_URL')) {
+            throw new \Exception('C3_THEMES_URL is not set');
+        }
         return C3_THEMES_URL . $this->structure->directory . '/';
     }
 
@@ -85,6 +77,20 @@ class Theme
     {
         $styleTag = new Tag\Style(['href' => $this->getThemeUrl() . $stylePath]);
         return (string) $styleTag . "\n";
+    }
+
+    public function pageExists(string $templateName): bool
+    {
+        return $this->structure->pageExists($templateName);
+    }
+
+    /**
+     * Sets the current page in the structure.
+     * @param string $pageName
+     */
+    public function setCurrentPage(string $pageName)
+    {
+        $this->structure->setCurrentPage($pageName);
     }
 
     public function view()

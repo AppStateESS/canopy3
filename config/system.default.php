@@ -21,3 +21,10 @@ define('C3_DEVELOPMENT_MODE', false);
  * can use this to debug a template file.
  */
 //define('C3_TEMPLATE_EMPTY_WARNING_DEFAULT', false);
+
+/**
+ * If true, each call will test if the installation needs to be run. Once you
+ * have installed Canopy3, you may comment this out or change it to false in
+ * your system.php file.
+ */
+define('C3_TEST_SETUP', true);

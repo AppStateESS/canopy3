@@ -10,6 +10,7 @@ namespace Dashboard\Setup\Controller;
 use Canopy3\Template;
 use Canopy3\HTTP\Header;
 use Canopy3\HTTP\Request;
+use Canopy3\HTTP\Response;
 
 class Setup extends \Canopy3\Controller
 {
@@ -29,22 +30,20 @@ class Setup extends \Canopy3\Controller
         $this->setupFileExists = is_file(C3_DIR . 'config/setup.php');
         $this->resourcesConfigExists = is_file(C3_DIR . 'config/resourcesUrl.php');
         $this->databaseConfigExists = is_file(C3_DIR . 'config/db.php');
-        if (!$this->resourcesConfigExists) {
-            $this->defineDefaultUrl();
-        }
+
+        self::$javascriptUrl = C3_DASHBOARDS_URL . 'Setup/javascript/';
         Header::singleton()->setSiteTitle('Administration Setup');
         self::$template = new Template(self::templateDir);
     }
 
-    private function defineDefaultUrl()
+    public function get($command, $isAjax)
     {
-        $url = preg_replace('@public/$@', '',
-                \Canopy3\HTTP\Server::getCurrentUri());
-        define('C3_RESOURCES_URL', $url . 'resources/');
-        define('C3_DASHBOARDS_URL', C3_RESOURCES_URL . 'dashboards/');
-        define('C3_PLUGINS_URL', C3_RESOURCES_URL . 'plugins/');
-        define('C3_THEMES_URL', C3_RESOURCES_URL . 'themes/');
-        self::$javascriptUrl = C3_DASHBOARDS_URL . 'Setup/javascript/';
+        if (!$isAjax) {
+            switch ($command) {
+                case 'view':
+                    return $this->view();
+            }
+        }
     }
 
     private function setupAllowed()
@@ -114,9 +113,7 @@ EOF;
 
     public function view()
     {
-        $theme = \Canopy3\Theme::singleton();
-        $theme->addContent($this->displayStage());
-        echo $theme->view();
+        return Response::themed($this->displayStage());
     }
 
 }

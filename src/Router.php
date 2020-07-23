@@ -17,10 +17,12 @@ namespace Canopy3;
 
 use Canopy3\HTTP\Request;
 use Canopy3\HTTP\Server;
+use Canopy3\HTTP\Response;
 use Canopy3\Exception\CodedException;
 use Canopy3\Exception\DashboardControllerNotFound;
 use Canopy3\Exception\PluginControllerNotFound;
 use Canopy3\Exception\UnknownRequestMethod;
+use Canopy3\Exception\EmptyResponse;
 
 class Router
 {
@@ -28,12 +30,6 @@ class Router
     private const allowedMethods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'];
 
     private static \Canopy3\Router $singleton;
-
-    /**
-     * If true, the request was an ajax call.
-     * @var bool
-     */
-    private bool $isAjax;
 
     /**
      * Instantiation of requested controller.
@@ -68,10 +64,21 @@ class Router
     private bool $forceAssign = false;
 
     /**
+     * If true, the request was an ajax call.
+     * @var bool
+     */
+    private bool $isAjax = false;
+
+    /**
      * Name of the library within a dashboard or plugin.
      * @var string
      */
     private ?string $library;
+
+    /**
+     * The request method
+     * @var string
+     */
     private string $method = 'get';
 
     /**
@@ -92,6 +99,9 @@ class Router
      */
     private ?string $site;
 
+    /**
+     * @return \Canopy3\Router;
+     */
     public static function singleton()
     {
         self::$singleton ??= new self;
@@ -118,10 +128,13 @@ class Router
      */
     public function execute()
     {
-        $restfulCommand = $this->buildRestfulCommand();
-
-        $response = $this->controller->{$restfulCommand}();
-        return is_a($response, 'Canopy3\HTTP\Response') ? $response : Response::themeHtml($response);
+        $response = $this->controller->{$this->method}($this->command,
+                $this->isAjax);
+        if (is_null($response)) {
+            throw new EmptyResponse($this->controllerClassName, $this->method,
+                    $this->command);
+        }
+        return is_a($response, 'Canopy3\HTTP\Response\ResponseType') ? $response : Response::themed($response);
     }
 
     public function getValues()
@@ -157,6 +170,7 @@ class Router
     public function setController(object $controller)
     {
         $this->controller = $controller;
+        $this->controllerClassName = get_class($controller);
     }
 
     public function setControllerClassName(string $controllerClassName)
@@ -166,7 +180,7 @@ class Router
 
     public function setControllerName(string $controllerName)
     {
-        if (is_null($this->controllerName) || $this->forceReassign) {
+        if (!isset($this->controllerName) || $this->forceReassign) {
             $this->controllerName = $controllerName;
         } else {
             throw new \RouterReassignException;
@@ -188,56 +202,6 @@ class Router
             $this->resourceType = $resourceType;
         } else {
             throw new \RouterReassignException;
-        }
-    }
-
-    private function buildRestfulCommand()
-    {
-        $method = Request::singleton()->getMethod();
-
-        if (!$this->methodAllowed($method)) {
-            throw new UnknownRequestMethod($method);
-        }
-
-        $command = $this->command;
-        if (empty($command)) {
-            throw new CodedException('Router command is unassigned', 500);
-        }
-        if ($method === 'GET') {
-            if (empty($command)) {
-                if ($this->resourceId > 0) {
-
-                }
-            }
-        }
-        $restState = ucwords(strtolower($method));
-        var_dump(get_defined_vars());
-        exit;
-
-        switch ($method) {
-            case 'GET':
-                $response = $this->get();
-                break;
-            case 'HEAD':
-                $response = $this->head();
-                break;
-            case 'POST':
-                $response = $this->post();
-                break;
-            case 'PUT':
-                $response = $this->put();
-                break;
-            case 'DELETE':
-                $response = $this->delete();
-                break;
-            case 'OPTIONS':
-                $response = $this->options();
-                break;
-            case 'PATCH':
-                $response = $this->patch();
-                break;
-            default:
-                break;
         }
     }
 
@@ -267,18 +231,18 @@ class Router
                 $this->controllerClassName = 'Canopy3\\DataController\\File';
                 break;
 
-            case 'page':
-                $this->controllerClassName = 'Canopy3\\DataController\\Page';
-                break;
 
             case 'image':
                 $this->controllerClassName = 'Canopy3\\DataController\\Image';
                 break;
 
             default:
-                throw new CodedException('Router resource type missing or unknown',
-                        404);
+            case 'page':
+                $this->controllerClassName = 'Canopy3\\DataController\\Page';
+                break;
         }
+//                throw new CodedException('Router resource type missing or unknown',
+//                        404);
     }
 
     private function loadResourceCommand(array $requestUriArray)
@@ -308,14 +272,14 @@ class Router
     {
         switch ($this->resourceType) {
             case 'dashboard':
-                $this->controllerClassName = "dashboard\\{$this->library}\{$this->controllerName}";
+                $this->controllerClassName = "\\Canopy3\\dashboard\\{$this->library}\\{$this->controllerName}";
                 if (!class_exists($this->controllerClassName)) {
                     throw new DashboardControllerNotFound($this->controllerName);
                 }
                 break;
 
             case 'plugin':
-                $this->controllerClassName = "plugin\\{$this->library}\{$this->controllerName}";
+                $this->controllerClassName = "\\Canopy3\\plugin\\{$this->library}\{$this->controllerName}";
                 if (!class_exists($this->controllerClassName)) {
                     throw new PluginControllerNotFound($this->controllerClassName);
                 }
@@ -340,11 +304,10 @@ class Router
     private function parseRequest()
     {
         $requestUriArray = $this->getRequestUriArray();
-
+        $this->isAjax = Request::singleton()->isAjax();
         if ($requestUriArray == false) {
             return;
         }
-
         $resourceType = strtolower(array_shift($requestUriArray));
         $this->resourceType = $resourceType;
         if (in_array($this->resourceType, ['plugin', 'dashboard'])) {
@@ -360,7 +323,7 @@ class Router
 
     private function parseResourceUri($requestUriArray)
     {
-        if (empty($requireUriArray)) {
+        if (empty($requestUriArray)) {
             throw new CodedException('Could not load resource library', 404);
         }
         $this->library = array_shift($requestUriArray);

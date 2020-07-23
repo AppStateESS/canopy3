@@ -4,7 +4,28 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-class HTML
+
+namespace Canopy3\HTTP\Response;
+
+class Html extends ResponseType
 {
-//put your code here
+
+    protected ?string $content;
+
+    public function __construct(?string $content = 'No content')
+    {
+        $this->setContent($content);
+    }
+
+    public function setContent(string $content)
+    {
+        $this->content = $content;
+    }
+
+    public function execute()
+    {
+        \Canopy3\HTTP\Header::singleton()->sendHttpResponseCode();
+        echo $this->content;
+    }
+
 }

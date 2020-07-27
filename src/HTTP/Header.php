@@ -53,6 +53,17 @@ class Header
         $this->scriptValues[$varName] = $value;
     }
 
+    public function getFullTitle()
+    {
+        $tag = new \Canopy3\Tag(null, 'title');
+        if ($this->pageTitle->isEmpty()) {
+            $tag->child = $this->siteTitle->get();
+        } else {
+            $tag->child = $this->pageTitle->get() . ' - ' . $this->siteTitle->get();
+        }
+        return $tag->print();
+    }
+
     public function getScripts()
     {
         if (empty($this->scripts)) {
@@ -104,15 +115,9 @@ class Header
         $this->pageTitle->set($title);
     }
 
-    public function getFullTitle()
+    public function sendHttpResponseCode()
     {
-        $tag = new \Canopy3\Tag(null, 'title');
-        if ($this->pageTitle->isEmpty()) {
-            $tag->child = $this->siteTitle->get();
-        } else {
-            $tag->child = $this->pageTitle->get() . ' - ' . $this->siteTitle->get();
-        }
-        return $tag->print();
+        http_response_code($this->httpResponseCode);
     }
 
     public function view()
@@ -124,11 +129,6 @@ class Header
             $values[] = $scripts;
         }
         return implode("\n", $values) . "\n";
-    }
-
-    public function sendHttpResponseCode()
-    {
-        http_response_code($this->httpResponseCode);
     }
 
 }

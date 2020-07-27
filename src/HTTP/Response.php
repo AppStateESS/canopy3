@@ -11,10 +11,9 @@ namespace Canopy3\HTTP;
 
 use Canopy3\HTTP\Response\Html;
 use Canopy3\HTTP\Response\Json;
-use Canopy3\HTTP\Response\ErrorHtml;
-use Canopy3\HTTP\Response\ErrorJson;
-use Canopy3\HTTP\Response\ThemedError;
+use Canopy3\HTTP\Response\Redirect;
 use Canopy3\HTTP\Response\Themed;
+use Canopy3\HTTP\Response\ThemedError;
 use Canopy3\HTTP\Header;
 use Canopy3\Theme;
 use Canopy3\HTTP\Response\ResponseType;
@@ -43,6 +42,12 @@ class Response
     {
         $themed = new ThemedError($content);
         return $themed;
+    }
+
+    public static function redirect(string $url)
+    {
+        $redirect = new Redirect($url);
+        return $redirect;
     }
 
 }

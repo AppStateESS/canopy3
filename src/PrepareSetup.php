@@ -7,9 +7,12 @@
 
 namespace Canopy3;
 
-if (!PrepareSetup::resourceUrlReady() || SetupTest::databaseReady()) {
+if (!PrepareSetup::resourceUrlReady() || !PrepareSetup::databaseReady()) {
     PrepareSetup::createTemporaryResourceUrls();
-    PrepareSetup::buildRouter();
+    $router = \Canopy3\Router::singleton();
+    if (HTTP\Server::getRequestUriOnly() === false) {
+        PrepareSetup::buildRouter($router);
+    }
 }
 
 class PrepareSetup
@@ -29,10 +32,10 @@ class PrepareSetup
         return is_file(C3_DIR . 'config/db.php');
     }
 
-    public static function buildRouter()
+    public static function buildRouter($router)
     {
         $controller = new \Dashboard\Setup\Controller\Setup;
-        $router = \Canopy3\Router::singleton();
+
         $router->setControllerName('Setup');
         $router->setController($controller);
         $router->setCommand('view');
@@ -40,6 +43,9 @@ class PrepareSetup
 
     public static function createTemporaryResourceUrls()
     {
+        if (defined('C3_RESOURCES_URL')) {
+            return;
+        }
         $url = preg_replace('@public/$@', '',
                 \Canopy3\HTTP\Server::getCurrentUri());
         define('C3_RESOURCES_URL', $url . 'resources/');

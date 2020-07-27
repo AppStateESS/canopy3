@@ -135,7 +135,6 @@ class Request
                 break;
 
             case 'POST':
-                var_dump($contentType);
                 if (strpos($contentType, 'multipart/form-data') !== false) {
                     $this->{$this->method}->setValues($_POST);
                 } else {

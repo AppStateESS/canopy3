@@ -30,6 +30,16 @@ class Template
         }
     }
 
+    /**
+     * Returns an assumed template directory based on the name of the dashboard
+     * @param string $library
+     * @return string
+     */
+    public static function dashboardDirectory(string $library): string
+    {
+        return C3_DIR . "resources/dashboards/$library/templates/";
+    }
+
     public function getPath()
     {
         return $this->path;
@@ -37,12 +47,22 @@ class Template
 
     public static function htmlSuffix($fileName)
     {
-        return preg_match('@\.html@', $fileName) ? $fileName : $fileName . '.html';
+        return preg_match('@\.(html|txt)$@', $fileName) ? $fileName : $fileName . '.html';
     }
 
     public function isRegistered(string $functionName)
     {
         return isset($this->registeredFunctions[$functionName]);
+    }
+
+    /**
+     * Returns an assumed template directory based on the name of the plugin
+     * @param string $library
+     * @return string
+     */
+    public static function pluginDirectory(string $library): string
+    {
+        return C3_DIR . "resources/plugins/$library/templates/";
     }
 
     public function registerFunction(string $functionName,

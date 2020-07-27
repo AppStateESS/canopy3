@@ -14,7 +14,7 @@ abstract class ResponseType
 
     public abstract function execute();
 
-    public function setHttpResponseCode(int $code)
+    public function setHttpResponseCode(int $httpResponseCode)
     {
         $this->httpResponseCode = $httpResponseCode;
     }

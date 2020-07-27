@@ -10,9 +10,9 @@ namespace Canopy3\Exception;
 class RESTfulControlNotAssigned extends CodedException
 {
 
-    public function __construct()
+    public function __construct(string $method, string $className)
     {
-        parent::__construct('Requested RESTful method not assigned for this controller',
+        parent::__construct("Requested RESTful method '$method' not assigned for controller $className",
                 404);
     }
 

@@ -25,39 +25,39 @@ abstract class Controller
 
     }
 
-    public function getHtml()
+    public function get(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('getHtml');
+        throw new RESTfulControlNotAssigned('get', get_class($this));
     }
 
-    public function head()
+    public function head(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('head');
+        throw new RESTfulControlNotAssigned('head', get_class($this));
     }
 
-    public function post()
+    public function post(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('post');
+        throw new RESTfulControlNotAssigned('post', get_class($this));
     }
 
-    public function put()
+    public function put(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('put');
+        throw new RESTfulControlNotAssigned('put', get_class($this));
     }
 
-    public function delete()
+    public function delete(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('delete');
+        throw new RESTfulControlNotAssigned('delete', get_class($this));
     }
 
-    public function options()
+    public function options(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('options');
+        throw new RESTfulControlNotAssigned('options', get_class($this));
     }
 
-    public function patch()
+    public function patch(string $command, bool $isAjax)
     {
-        throw new RESTfulControlNotAssigned('patch');
+        throw new RESTfulControlNotAssigned('patch', get_class($this));
     }
 
 }

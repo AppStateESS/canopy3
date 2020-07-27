@@ -3,7 +3,7 @@
 Instantiate the object using the directory the template files sit in.
 
 ```
-Exam
+$template = new \Canopy3\Template('path/to/templates/directory/');
 ```
 
 The values added to the template should be in an associative array.
@@ -17,9 +17,9 @@ $values['rows'] = [
 ];
 ```
 
-The ```render``` function gets the name of the template file (in the directory you entered earlier) and the values to pipe in. The template file should have a ".html" extension. You do not need to include it in the parameter.
+The ```render``` function gets the name of the template file (in the directory you entered earlier) and the values to pipe in. The template file should have an ``.html`` or ``.txt`` extension. The extension may be excluded if the file uses the ``.html`` extension.
 
-The third boolean variable determines whether empty or unset values are displayed as blank or with an html comment.
+The third Boolean variable, ``emptyWarning`` determines whether empty or unset values are displayed as blank or with an html comment.
 
 ```
 // Jobs will resolve to Jobs.html
@@ -31,9 +31,10 @@ Jobs.html
 
 ```
 /**
- * String and int values can be called directly
- * if not set, it will be blank or there will be an
- * html comment:
+ * String and int values can be called directly.
+ * If the value is not set, either nothing is printed
+ * or, if the third parameter is true, the following html
+ * comment is added:
  * <!-- Template variable [$valueName] is missing -->
  */
 <h1><?= $t->title ?></h1>
@@ -62,7 +63,7 @@ Alternatively, you may use the wrap() function.
 <?=$t->wrap('greeting', '<p class="special-greeting">', '</p>')?>
 ```
 
-The first parameter is the name of the variable. Second and third parameter are what will print on the left and right respectively.
+The first parameter is the name of the variable. Second and third parameter are what will print on the left and right respectively. If the value is blank and ``emptyWarning`` is true, just the warning will print, not the wrapper.
 
 ## Working with array values
 

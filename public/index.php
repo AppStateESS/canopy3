@@ -17,18 +17,21 @@ use Canopy3\Role;
 use Canopy3\OutputError;
 use Canopy3\HTTP\Response;
 
-try {
-    $router = Router::singleton();
+processRouter();
 
-    // Determines if setup is required
-    if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
-        require C3_DIR . 'src/PrepareSetup.php';
+function processRouter()
+{
+    try {
+        $router = Router::singleton();
+        // Determines if setup is required
+        if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
+            require C3_DIR . 'src/PrepareSetup.php';
+        }
+        $response = $router->execute();
+    } catch (\Canopy3\Exception\CodedException $e) {
+        $response = OutputError::codedException($e);
+    } catch (\Exception $e) {
+        $response = OutputError::exception($e);
     }
-
-    $response = $router->execute();
-} catch (\Canopy3\Exception\CodedException $e) {
-    $response = OutputError::codedException($e);
-} catch (\Exception $e) {
-    $response = OutputError::exception($e);
+    Response::execute($response);
 }
-Response::execute($response);

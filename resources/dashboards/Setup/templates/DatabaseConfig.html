@@ -1,0 +1,40 @@
+<p>Next we need to create the database <code>config/db.php</code> file. This file
+  will allow us to connect to the database.</p>
+
+<form method="post" action="./d/Setup/Setup/createDB">
+  <div class="form-group row">
+    <label for="username-input" class="col-sm-3 col-form-label">Username</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="username-input" name="username" />
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="password-input" class="col-sm-3 col-form-label">Password</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="password-input" name="password" />
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="database-input" class="col-sm-3 col-form-label">Database name</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="database-input" name="database" />
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="port-input" class="col-sm-3 col-form-label">Port</label>
+    <div class="col-sm-9">
+      <input class="form-control" id="port-input" name="port" />
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="system-input" class="col-sm-3 col-form-label">System</label>
+    <div class="col-sm-9">
+      <select id="system" class="form-control">
+        <option value="mysqli">MySQL/MariaDB</option>
+        <option value="pgsql">PostGreSQL</option>
+      </select>
+    </div>
+  </div>
+
+
+</form>

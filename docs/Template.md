@@ -27,9 +27,9 @@ echo $template->render('Jobs', $values, true);
 ```
 
 
-Jobs.html
 
 ```
+# jobs.html
 /**
  * String and int values can be called directly.
  * If the value is not set, either nothing is printed
@@ -64,6 +64,22 @@ Alternatively, you may use the wrap() function.
 ```
 
 The first parameter is the name of the variable. Second and third parameter are what will print on the left and right respectively. If the value is blank and ``emptyWarning`` is true, just the warning will print, not the wrapper.
+
+If you want conditional text within your template, you can set a value a boolean and then test it.
+
+```
+// set your conditional boolean with other values
+$values['showJobs'] = true;
+
+```
+
+```
+<!-- then in your html file, test the value with a call to "true" or "is" -->
+<?php if ($t->showJobs->true):?>
+	<p>Only show this content if showJobs is true<p>
+<?php endif;>
+```
+
 
 ## Working with array values
 

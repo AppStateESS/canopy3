@@ -28,16 +28,22 @@ class OutputError
 
     private static function codedHtmlView(CodedException $e)
     {
+        HTTP\Header::singleton()->setHttpResponseCode($code);
         $values = self::getDebugValues($e);
         $code = $e->getCode();
         $template = self::getTemplate();
-        return Response::themedError($template->render($code . '.html', $values),
-                        $code);
+        return Response::themedError($template->render($code . '.html', $values));
     }
 
     private static function codedJsonView(CodedException $e)
     {
-        throw $e;
+        $values['message'] = $e->getMessage();
+        $values['file'] = $e->getFile();
+        $values['line'] = $e->getLine();
+        $values['trace'] = $e->getTrace();
+        $code = $e->getCode();
+        HTTP\Header::singleton()->setHttpResponseCode($code);
+        return Response::json($values);
     }
 
     /**
@@ -51,7 +57,11 @@ class OutputError
     {
         HTTP\Header::singleton()->setHttpResponseCode(500);
         if (Request::singleton()->isAjax()) {
-            throw $e;
+            $values['message'] = $e->getMessage();
+            $values['file'] = $e->getFile();
+            $values['line'] = $e->getLine();
+            $values['trace'] = $e->getTrace();
+            return Response::json($values);
         } else {
             $values = self::getDebugValues($e);
             $template = self::getTemplate();

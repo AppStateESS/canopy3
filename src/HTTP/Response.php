@@ -32,6 +32,12 @@ class Response
         return $html;
     }
 
+    public static function json(array $values)
+    {
+        $json = new Json($values);
+        return $json;
+    }
+
     public static function themed(string $content)
     {
         $themed = new Themed($content);

@@ -7,7 +7,20 @@
 
 namespace Canopy3\HTTP\Response;
 
-class Json
+class Json extends ResponseType
 {
-//put your code here
+
+    private array $values = [];
+
+    public function __construct(array $values = [])
+    {
+        $this->values = $values;
+    }
+
+    public function execute()
+    {
+        \Canopy3\HTTP\Header::singleton()->sendHttpResponseCode();
+        echo json_encode($this->values);
+    }
+
 }

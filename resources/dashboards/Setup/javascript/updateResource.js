@@ -3,9 +3,9 @@ const saveUrlNode = document.getElementsByClassName('saveUrl')
 const urlLength = saveUrlNode.length
 
 for (let i = 0; i < urlLength; i++) {
-  saveUrlNode[i].innerText = resourcesUrl
+  saveUrlNode[i].innerText = resourcesUrlNode
 }
 
-resourceUrlNode.addEventListener('keyup', () => {
+resourcesUrlNode.addEventListener('keyup', () => {
   saveUrlNode.innerText = resourcesUrlNode.value
 })

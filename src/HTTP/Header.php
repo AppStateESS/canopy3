@@ -16,6 +16,7 @@ class Header
 {
 
     private static $header;
+    private string $contentType = 'Content-type:text/html; charset=UTF-8';
     private int $httpResponseCode = 200;
     private array $scripts = [];
     private array $scriptValues = [];
@@ -100,6 +101,36 @@ class Header
         return self::$header;
     }
 
+    public function setContentType(string $contentType)
+    {
+        $contentType = preg_replace('/^content-type:\s?/i', '', $contentType);
+        switch ($contentType) {
+            case 'json':
+                $this->contentType = 'application/json';
+                break;
+
+            case 'html':
+                $this->contentType = 'text/html; charset=UTF-8';
+                break;
+
+            case 'text':
+                $this->contentType = 'text/plain; charset=UTF-8';
+                break;
+
+            case 'download':
+            case 'octet-stream':
+                $this->contentType = 'application/octet-stream';
+                break;
+
+            case 'pdf':
+                $this->contentType = 'application/pdf';
+                break;
+
+            default:
+                $this->contentType = $contentType;
+        }
+    }
+
     public function setHttpResponseCode(int $code)
     {
         $this->httpResponseCode = $code;
@@ -113,6 +144,14 @@ class Header
     public function setPageTitle($title)
     {
         $this->pageTitle->set($title);
+    }
+
+    public function sendContentType(string $contentType = null)
+    {
+        if ($contentType !== null) {
+            $this->setContentType($contentType);
+        }
+        header('Content-Type:' . $this->contentType);
     }
 
     public function sendHttpResponseCode()

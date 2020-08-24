@@ -19,7 +19,10 @@ class Json extends ResponseType
 
     public function execute()
     {
-        \Canopy3\HTTP\Header::singleton()->sendHttpResponseCode();
+        $header = \Canopy3\HTTP\Header::singleton();
+        $header->sendHttpResponseCode();
+        $header->sendContentType('json');
+
         echo json_encode($this->values);
     }
 

@@ -21,6 +21,7 @@ processRouter();
 
 function processRouter()
 {
+    set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
     try {
         $router = Router::singleton();
         // Determines if setup is required
@@ -30,8 +31,8 @@ function processRouter()
         $response = $router->execute();
     } catch (\Canopy3\Exception\CodedException $e) {
         $response = OutputError::codedException($e);
-    } catch (\Exception $e) {
-        $response = OutputError::exception($e);
+    } catch (\Throwable $e) {
+        $response = OutputError::throwable($e);
     }
     Response::execute($response);
 }

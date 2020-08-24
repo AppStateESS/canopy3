@@ -35,7 +35,7 @@ class Role
         return false;
     }
 
-    public function getCurrent()
+    public static function getCurrent()
     {
         if (!isset($_SESSION['User'])) {
             $_SESSION['User'] = new Guest;

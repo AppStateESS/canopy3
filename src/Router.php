@@ -128,6 +128,7 @@ class Router
         $this->loadController();
         $response = $this->controller->{$this->method}($this->command,
                 $this->isAjax);
+
         if (is_null($response)) {
             throw new EmptyResponse($this->controllerClassName, $this->method,
                     $this->command);
@@ -314,7 +315,7 @@ class Router
             return;
         }
         $resourceType = strtolower(array_shift($requestUriArray));
-        $this->resourceType = $resourceType == 'p' ? 'plugin' : $resourceType == 'd' ? 'dashboard' : $resourceType;
+        $this->resourceType = $resourceType == 'p' ? 'plugin' : ($resourceType == 'd' ? 'dashboard' : $resourceType);
         if (in_array($this->resourceType, ['plugin', 'dashboard'])) {
             $this->parseResourceUri($requestUriArray);
             $this->loadResourceControllerClassName();

@@ -63,7 +63,7 @@ class Robots
      */
     private $unavailableAfter = 0;
 
-    public function singleton()
+    public static function singleton()
     {
         if (!self::$robots) {
             self::$robots = new self;

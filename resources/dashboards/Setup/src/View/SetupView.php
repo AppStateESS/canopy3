@@ -43,8 +43,10 @@ class SetupView
     {
         $header = Header::singleton()->addScript($this->javascriptUrl . 'databaseConfig.js',
                 ['defer' => true]);
+        $configDirectory = C3_DIR . 'config/';
         $values = [];
-        $values['configWritable'] = is_writable(C3_DIR . 'config/');
+        $values['configDirectory'] = $configDirectory;
+        $values['configWritable'] = is_writable($configDirectory);
         return $this->wrapper('Create Database Configuration File',
                         $this->template->render('DatabaseConfig', $values));
     }

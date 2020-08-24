@@ -12,6 +12,7 @@ use Canopy3\HTTP\Request;
 use Canopy3\HTTP\Response;
 use Dashboard\Setup\Factory\SetupFactory;
 use Dashboard\Setup\View\SetupView;
+use Canopy3\Exception\UnknownControllerCommand;
 
 class Setup extends \Canopy3\Controller
 {
@@ -34,12 +35,18 @@ class Setup extends \Canopy3\Controller
 
     public function get(string $command, bool $isAjax)
     {
-        if (!$isAjax) {
+        if ($isAjax) {
+            switch ($command) {
+                case 'dbTest':
+                    return Response::json(SetupFactory::testDB($this->request));
+            }
+        } else {
             switch ($command) {
                 case 'view':
                     return Response::themed($this->displayStage());
             }
         }
+        throw new UnknownControllerCommand('GET', $command);
     }
 
     public function post(string $command, bool $isAjax)
@@ -49,6 +56,7 @@ class Setup extends \Canopy3\Controller
                 return $this->createResourceUrl();
                 break;
         }
+        throw new UnknownControllerCommand('POST', $command);
     }
 
     private function createResourceUrl()

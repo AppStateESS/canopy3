@@ -6,6 +6,7 @@
     <label for="username-input" class="col-3 col-form-label">Username</label>
     <div class="col-9">
       <input class="form-control" id="username-input" name="username" />
+      <div class="badge badge-danger" id="username-error" style="display:none"></div>
     </div>
   </div>
   <div class="form-group row">
@@ -17,7 +18,8 @@
   <div class="form-group row">
     <label for="database-input" class="col-3 col-form-label">Database name</label>
     <div class="col-9">
-      <input class="form-control" id="database-input" name="database" />
+      <input class="form-control" id="database-input" name="database" value="canopy3" />
+      <div class="badge badge-danger" id="database-error" style="display:none"></div>
     </div>
   </div>
   <div class="form-group row">
@@ -36,8 +38,8 @@
     <label for="driver-input" class="col-3 col-form-label">Driver</label>
     <div class="col-9">
       <select id="driver-input" class="form-control">
-        <option value="pdo_pgsql">PostGreSQL</option>
         <option value="pdo_mysql">MySQL/MariaDB</option>
+        <option value="pdo_pgsql">PostGreSQL</option>
       </select>
     </div>
   </div>
@@ -55,13 +57,19 @@
     ];
   </code>
 
-  <div class="text-center mb-4">
-    <button type="button" class="btn btn-warning" id="test-connection">Test connection</button>
+  <div class="text-center my-4">
+    <button type="button" class="btn btn-warning" id="test-connection" disabled>Test connection</button>
   </div>
   <?php if ($t->configWritable->is):?>
   <div class="text-center">
-    <button type="submit" class="btn btn-primary" id="save-button">Save database configuration file</button>
+    <button type="submit" class="btn btn-primary" id="save-button" disabled>Save database configuration
+      file</button>
   </div>
-
+  <?php else:?>
+  <div class="text-center">
+    <p>Your <code>config/</code> directory is not writable. Copy the above into
+      <code><?=$t->configDirectory?>db.php</code>
+    </p>
+  </div>
   <?php endif;?>
 </form>

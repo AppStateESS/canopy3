@@ -28,10 +28,10 @@ class OutputError
 
     private static function codedHtmlView(CodedException $e)
     {
-        HTTP\Header::singleton()->setHttpResponseCode($code);
         $values = self::getDebugValues($e);
         $code = $e->getCode();
         $template = self::getTemplate();
+        HTTP\Header::singleton()->setHttpResponseCode($code);
         return Response::themedError($template->render($code . '.html', $values));
     }
 
@@ -47,29 +47,28 @@ class OutputError
     }
 
     /**
-     * This is an uncaught, unexpected exception. The assumption is something
+     * This is an uncaught, unexpected throwable error. The assumption is something
      * went so wrong we had a 500 server error.
-     * @param \Exception $e
+     * @param \Throwable $error
      * @return type
-     * @throws \Exception
      */
-    public static function exception(\Exception $e)
+    public static function throwable(\Throwable $error)
     {
         HTTP\Header::singleton()->setHttpResponseCode(500);
         if (Request::singleton()->isAjax()) {
-            $values['message'] = $e->getMessage();
-            $values['file'] = $e->getFile();
-            $values['line'] = $e->getLine();
-            $values['trace'] = $e->getTrace();
+            $values['message'] = $error->getMessage();
+            $values['file'] = $error->getFile();
+            $values['line'] = $error->getLine();
+            $values['trace'] = $error->getTrace();
             return Response::json($values);
         } else {
-            $values = self::getDebugValues($e);
+            $values = self::getDebugValues($error);
             $template = self::getTemplate();
             return Response::themedError($template->render('500.html', $values));
         }
     }
 
-    private static function getDebugValues(\Exception $e)
+    private static function getDebugValues(\Throwable $e)
     {
         $values = [];
         if (Role::getCurrent()->isDeity() || Server::isDevelopmentMode()) {
@@ -84,19 +83,19 @@ class OutputError
         return $values;
     }
 
-    private function getTemplate()
+    private static function getTemplate()
     {
         return self::$template ?? new Template(C3_DIR . 'src/ErrorPage/templates/');
     }
 
-    private function xdebug(\Exception $e): string
+    private static function xdebug(\Throwable $e): string
     {
         $template = self::getTemplate();
         $values['xdebugMessage'] = $e->xdebug_message;
         return $template->render('Xdebug', $values);
     }
 
-    private function debug(\Exception $e): string
+    private static function debug(\Throwable $e): string
     {
         $template = self::getTemplate();
         return $template->render('Debug', $values);

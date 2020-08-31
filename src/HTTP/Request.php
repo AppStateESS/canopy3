@@ -29,7 +29,6 @@ class Request
 
     private function __construct()
     {
-        $this->loadIsAjax();
         $this->loadRequestUri();
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);
         if (!$this->allowedMethod($this->method)) {
@@ -41,6 +40,7 @@ class Request
         $this->POST = new RequestType('POST');
         $this->PUT = new RequestType('PUT');
         $this->loadData();
+        $this->loadIsAjax();
     }
 
     public function __get($varName)
@@ -146,7 +146,7 @@ class Request
 
     private function loadIsAjax()
     {
-        $this->isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+        $this->isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') || isset($this->GET->json);
     }
 
     /**

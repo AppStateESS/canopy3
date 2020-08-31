@@ -22,17 +22,12 @@ processRouter();
 function processRouter()
 {
     set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
-    try {
-        $router = Router::singleton();
-        // Determines if setup is required
-        if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
-            require C3_DIR . 'src/PrepareSetup.php';
-        }
-        $response = $router->execute();
-    } catch (\Canopy3\Exception\CodedException $e) {
-        $response = OutputError::codedException($e);
-    } catch (\Throwable $e) {
-        $response = OutputError::throwable($e);
+    $router = Router::singleton();
+
+    // Determines if setup is required
+    if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
+        require C3_DIR . 'src/PrepareSetup.php';
     }
+    $response = $router->execute();
     Response::execute($response);
 }

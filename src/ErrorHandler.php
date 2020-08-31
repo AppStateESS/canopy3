@@ -12,7 +12,15 @@ class ErrorHandler
 
     public static function catchError(\Throwable $error)
     {
-        $response = OutputError::throwable($error);
+        switch (get_class($error)) {
+            case 'Canopy3\Exception\CodedException':
+                $response = OutputError::codedException($error);
+                break;
+
+            default:
+                $response = OutputError::throwable($error);
+                break;
+        }
         HTTP\Response::execute($response);
     }
 

@@ -14,9 +14,51 @@ const driverConfig = document.getElementById('driver-config')
 
 const usernameError = document.getElementById('username-error')
 const databaseError = document.getElementById('database-error')
+const passwordWarning = document.getElementById('password-warning')
 
 const testConnection = document.getElementById('test-connection')
 const saveButton = document.getElementById('save-button')
+const dbForm = document.getElementById('db-form')
+
+const connectionError = document.getElementById('connection-error')
+const successfulTestBanner = document.getElementById('successful-test')
+
+const httpRequest = new XMLHttpRequest()
+
+const checkPassword = () => {
+  if (passwordInput.value.length == 0) {
+    passwordWarning.style['display'] = 'block'
+  } else {
+    passwordWarning.style['display'] = 'none'
+  }
+}
+
+const hideSaveButton = () => {
+  saveButton.style['display'] = 'none'
+}
+
+const showSaveButton = () => {
+  saveButton.style['display'] = 'block'
+}
+
+const testFields = () => {
+  if (usernameInput.value.length == 0 || databaseInput.value.length == 0) {
+    testConnection.disabled = true
+  } else {
+    testConnection.disabled = false
+  }
+}
+
+saveButton.addEventListener('click', () => {
+  console.log('save file')
+})
+
+dbForm.addEventListener('keydown', (e) => {
+  if (e.keyCode == 13) {
+    e.preventDefault()
+    return false
+  }
+})
 
 hostConfig.innerText = 'localhost'
 driverConfig.innerText = driverInput.selectedOptions[0].value
@@ -25,13 +67,14 @@ usernameInput.addEventListener('keyup', () => {
   usernameConfig.innerText = usernameInput.value
 })
 
-usernameInput.addEventListener('blur', () => {
-  testFields()
-})
+usernameInput.addEventListener('blur', testFields)
+usernameInput.addEventListener('mouseleave', testFields())
 
-databaseInput.addEventListener('blur', () => {
-  testFields()
-})
+databaseInput.addEventListener('blur', testFields())
+databaseInput.addEventListener('mouseleave', testFields())
+
+passwordInput.addEventListener('blur', checkPassword)
+passwordInput.addEventListener('mouseleave', checkPassword)
 
 passwordInput.addEventListener('keyup', () => {
   passwordConfig.innerText = passwordInput.value
@@ -50,20 +93,10 @@ driverInput.addEventListener('change', () => {
 })
 
 testConnection.addEventListener('click', () => {
+  clearTestFailed()
   connect()
 })
 
-const testFields = () => {
-  if (usernameInput.value.length == 0 || databaseInput.value.length == 0) {
-    testConnection.disabled = true
-    saveButton.disabled = true
-  } else {
-    testConnection.disabled = false
-    saveButton.disabled = false
-  }
-}
-
-const httpRequest = new XMLHttpRequest()
 const connect = () => {
   if (!httpRequest) {
     alert('Giving up :( Cannot create an XMLHTTP instance')
@@ -82,7 +115,9 @@ const connect = () => {
     if (httpRequest.status == 200) {
       parseResponse(httpRequest.response)
     } else {
-      console.error('Error!')
+      connectionError.innerHTML =
+        '<span>Could not connect with these server.</span>'
+      connectionError.style['display'] = 'block'
     }
   }
 
@@ -92,10 +127,29 @@ const connect = () => {
   httpRequest.send()
 }
 
+const testSuccessful = () => {
+  testConnection.style['display'] = 'none'
+  successfulTestBanner.style['display'] = 'block'
+  showSaveButton()
+}
+
+const testFailed = (message) => {
+  connectionError.innerHTML =
+    '<span><strong>Could not connect with these settings:</strong><br >' +
+    message +
+    '</span>'
+  connectionError.style['display'] = 'block'
+}
+
+const clearTestFailed = () => {
+  connectionError.style['display'] = 'none'
+}
+
 const parseResponse = (response) => {
   if (response.success) {
-    alert('parseResponse successful')
+    testSuccessful()
   } else {
+    hideSaveButton()
     if (response.error.databaseNameEmpty !== undefined) {
       databaseError.style['display'] = 'block'
       databaseError.innerHTML = 'Error: Database name empty'
@@ -108,6 +162,10 @@ const parseResponse = (response) => {
       usernameError.innerHTML = 'Error: User name empty'
     } else {
       usernameError.style['display'] = 'none'
+    }
+
+    if (response.error.connection !== undefined) {
+      testFailed(response.error.connection)
     }
   }
 }

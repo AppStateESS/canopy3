@@ -54,9 +54,21 @@ class Setup extends \Canopy3\Controller
         switch ($command) {
             case 'createResourceUrl':
                 return $this->createResourceUrl();
-                break;
+
+            case 'createDB':
+                return $this->createDBFile($this->request);
         }
         throw new UnknownControllerCommand('POST', $command);
+    }
+
+    private function createDBFile(Request $request)
+    {
+        $values = $request->POST->getValues();
+        if (SetupFactory::createDBFile($values)) {
+            return Response::redirect('./');
+        } else {
+            return Response::redirect('./d/Setup/Setup/databaseFailed');
+        }
     }
 
     private function createResourceUrl()

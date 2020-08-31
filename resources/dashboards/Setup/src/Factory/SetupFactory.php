@@ -14,6 +14,30 @@ use Doctrine\DBAL\DriverManager;
 class SetupFactory
 {
 
+    public static function createDBFile($values)
+    {
+        $username = $password = $dbname = $host = $port = $driver = null;
+        extract($values);
+        $dbContent[] = '<?php';
+        $dbContent[] = '$connectionParams = [';
+        $dbContent[] = "'user' => '$username',";
+        $dbContent[] = "'password' => '$password',";
+        $dbContent[] = "'dbname' => '$dbname',";
+        if (empty($host)) {
+            $host = 'localhost';
+        }
+        $dbContent[] = "'host' => '$host',";
+        if (!empty($port)) {
+            $dbContent[] = "'port' => '$port',";
+        }
+        $dbContent[] = "'driver' => '$driver',";
+        $dbContent[] = "];";
+
+        $fileContent = implode("\n", $dbContent);
+        $filename = C3_DIR . 'config/db.php';
+        return file_put_contents($filename, $fileContent);
+    }
+
     /**
      * Creates the resourcesUrl.php file in the config/ directory.
      *
@@ -32,23 +56,31 @@ class SetupFactory
 
     public static function testDB(Request $request)
     {
-        $connection = [
+        $connectionValues = [
             'user' => $request->GET->username,
             'password' => $request->GET->password,
             'dbname' => $request->GET->dbname,
             'host' => $request->GET->host ?? 'localhost',
-            'port' => $request->GET->port
+            'port' => $request->GET->port,
+            'driver' => $request->GET->driver
         ];
-        if ($connection['user'] == null) {
+        if ($connectionValues['user'] == null) {
             $result['success'] = false;
             $result['error']['userNameEmpty'] = true;
         }
-        if ($connection['dbname'] == null) {
+        if ($connectionValues['dbname'] == null) {
             $result['success'] = false;
             $result['error']['databaseNameEmpty'] = true;
         }
 
-        $result = ['success' => true];
+        try {
+            $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionValues);
+            $conn->connect();
+            $result = ['success' => true];
+        } catch (\Exception $e) {
+            $result['success'] = false;
+            $result['error']['connection'] = $e->getMessage();
+        }
 
         return $result;
     }

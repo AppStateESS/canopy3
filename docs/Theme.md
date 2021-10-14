@@ -1,5 +1,17 @@
 # Theming
 
+## Installing
+
+Themes reside in the ```canopy3/resources/themes/``` directory.
+You can install them using composer:
+```
+composer require name-of-library-or-dev/name-of-theme
+```
+Note that only stable themes will be downloaded. If you want to experiment, you will need to change the ```minimum-stability```
+variable in your composer.json.
+
+## Formatting
+
 Your theme page template must echo three variables: header, footer, and main. See the example below for more information.
 
 ### Page.html

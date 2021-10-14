@@ -1,7 +1,17 @@
 {
   "require": {
-    "doctrine/orm": "*"
+    "doctrine/orm": "*",
+    "oomphinc/composer-installers-extender": "^2.0"
   },
-  "require-dev": {
-  }
+  "extra": {
+    "installer-types": [
+      "canopy3-theme"
+    ],
+    "installer-paths": {
+      "resources/themes/{$name}": [
+        "type:canopy3-theme"
+      ]
+    }
+  },
+  "minimum-stability": "stable"
 }

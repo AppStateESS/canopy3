@@ -9,25 +9,26 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-require_once '../server.php';
-require_once '../src/Router.php';
+require_once '../DirectoryDefines.php';
+require_once C3_DIR . 'src/GlobalFunctions.php';
+require_once C3_DIR . 'src/AutoLoader.php';
 
 use Canopy3\Router;
+use Canopy3\Autoloader;
+use Canopy3\HTTP\Response;
 use Canopy3\Role;
 use Canopy3\OutputError;
-use Canopy3\HTTP\Response;
 
-processRouter();
+\Canopy3\AutoLoader::initialize();
+\Canopy3\requireConfigFile('config/system');
 
-function processRouter()
-{
-    set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
-    $router = Router::singleton();
+set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
 
-    // Determines if setup is required
-    if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
-        require C3_DIR . 'src/PrepareSetup.php';
-    }
-    $response = $router->execute();
-    Response::execute($response);
+// Determines if setup is required
+if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
+    require_once C3_DIR . 'src/Setup.php';
 }
+$router = Router::singleton();
+$response = $router->execute();
+Response::execute($response);
+

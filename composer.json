@@ -1,15 +1,24 @@
 {
   "require": {
     "doctrine/orm": "*",
-    "oomphinc/composer-installers-extender": "^2.0"
+    "oomphinc/composer-installers-extender": "^2.0",
+    "appstateess/canopy3-theme-simple": "dev-master"
   },
   "extra": {
     "installer-types": [
-      "canopy3-theme"
+      "canopy3-theme",
+      "canopy3-plugin",
+      "canopy3-dashboard"
     ],
     "installer-paths": {
       "resources/themes/{$name}": [
         "type:canopy3-theme"
+      ],
+      "resources/plugins/{$name}": [
+        "type:canopy3-plugin"
+      ],
+      "resources/dashboards/{$name}": [
+        "type:canopy3-dashboard"
       ]
     }
   },

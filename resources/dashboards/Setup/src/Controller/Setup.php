@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * @author Matthew McNaney <mcnaneym@appstate.edu>
@@ -16,13 +17,12 @@ use Canopy3\Exception\UnknownControllerCommand;
 
 class Setup extends \Canopy3\Controller
 {
-
     const setupFilePath = C3_DIR . 'config/setup.php';
 
     private SetupView $view;
-    private bool $setupFileExists = false;
-    private bool $resourcesConfigExists = false;
     private bool $databaseConfigExists = false;
+    private bool $resourcesConfigExists = false;
+    private bool $setupFileExists = false;
 
     public function __construct()
     {
@@ -75,7 +75,7 @@ class Setup extends \Canopy3\Controller
     {
         $result = SetupFactory::createResourceUrl($this->request);
         if ($result) {
-            return Response::redirect('d/Setup/Setup/view');
+            return Response::redirect('./d/Setup/Setup/view');
         } else {
             return Response::themedError($this->view->resourceFileError());
         }
@@ -93,7 +93,7 @@ class Setup extends \Canopy3\Controller
             case (!$this->databaseConfigExists):
                 return $this->view->createDatabaseConfig();
         }
-        return 'stage busted';
+        throw new \Exception('Setup stage could not continue');
     }
 
     private function setupAllowed()
@@ -106,5 +106,4 @@ class Setup extends \Canopy3\Controller
             return false;
         }
     }
-
 }

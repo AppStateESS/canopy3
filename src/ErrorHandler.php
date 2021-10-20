@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * The default ErrorHandler for exceptions. The behavior depends on the exception type.
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */

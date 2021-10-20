@@ -7,10 +7,20 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-spl_autoload_register(fn($namespaceString) => AutoLoader::run($namespaceString));
+
+namespace Canopy3;
 
 class AutoLoader
 {
+
+    public static function initialize()
+    {
+        require_once C3_DIR . 'vendor/autoload.php';
+
+        // Composer autoloader
+        // Canopy3 and resource autoloader
+        spl_autoload_register(fn($namespaceString) => self::run($namespaceString));
+    }
 
     /**
      * Receives a namespace string from the autoload register and determines if
@@ -40,8 +50,7 @@ class AutoLoader
         require_once C3_DIR . "src/AutoLoader/$file";
         $classFile = $call($fileName, $directory);
         if (!is_file($classFile)) {
-            throw new \Canopy3\Exception\AutoLoadFailure($namespaceString,
-                    $classFile);
+            return;
         }
         require_once $classFile;
     }
@@ -62,7 +71,7 @@ class AutoLoader
     /**
      * Returns the name of the file specified by the 'file' key in the
      * $params array. The string will be {$libraryName}.php.
-     * 
+     *
      * @param string $libraryName
      * @param array $params
      * @return string

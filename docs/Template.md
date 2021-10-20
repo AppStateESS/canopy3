@@ -17,19 +17,27 @@ $values['rows'] = [
 ];
 ```
 
-The ```render``` function gets the name of the template file (in the directory you entered earlier) and the values to pipe in. The template file should have an ``.html`` or ``.txt`` extension. The extension may be excluded if the file uses the ``.html`` extension.
-
-The third Boolean variable, ``emptyWarning`` determines whether empty or unset values are displayed as blank or with an html comment.
-
+To show the text content, call the ```render``` function:
 ```
-// Jobs will resolve to Jobs.html
+// Jobs will resolve to Jobs.phtml
 echo $template->render('Jobs', $values, true);
 ```
 
+The ```render``` function gets the name of the template file (in the directory you entered earlier) and the values to pipe in. The template file should have an ``.phtml``, ``.html``, or ``.txt`` extension. ``phtml`` is the default extension. Any other file type will throw an ```InvalidFileType``` exception.
+
+The third Boolean variable, ``emptyWarning`` determines how empty or unset values are displayed. If true, an html comment will be inserted. For example, if you misspelled "timestamp" in the template:
+```
+<p>Time of access: <!-- Template variable [tiemstamp] is missing --></p>
+
+```
+If ```emptyWarning``` is false, then the result would be:
+```
+<p>Time of access: </p>
+```
 
 
 ```
-# jobs.html
+# jobs.phtml
 /**
  * String and int values can be called directly.
  * If the value is not set, either nothing is printed
@@ -47,7 +55,7 @@ echo $template->render('Jobs', $values, true);
 <p>It is currently <?= $t->timestamp->asDate('%c') ?></p>
 ```
 
-If you want show a value with surrounding content but only wish to do so if the value exists, there are two methods.
+If you want to conditionally show a value with surrounding content, there are two methods.
 
 The first method is to test the value's existence.
 
@@ -56,6 +64,14 @@ The first method is to test the value's existence.
 	<p class="special-greeting"><?=$t->greeting?></p>
 <?php endif;?>
 ```
+or
+```
+<?=$t->greeting ? <<<EOF
+<p class="special-greeting">{$t->greeting}</p>
+EOF;
+: ''?>
+```
+
 
 Alternatively, you may use the wrap() function.
 
@@ -63,7 +79,7 @@ Alternatively, you may use the wrap() function.
 <?=$t->wrap('greeting', '<p class="special-greeting">', '</p>')?>
 ```
 
-The first parameter is the name of the variable. Second and third parameter are what will print on the left and right respectively. If the value is blank and ``emptyWarning`` is true, just the warning will print, not the wrapper.
+The first parameter is the name of the variable. The second and third parameter are what will print on the left and right respectively. If the value is blank and ``emptyWarning`` is true, just the warning will print, not the wrapper.
 
 If you want conditional text within your template, you can set a value a boolean and then test it.
 
@@ -77,9 +93,14 @@ $values['showJobs'] = true;
 <!-- then in your html file, test the value with a call to "true" or "is" -->
 <?php if ($t->showJobs->true):?>
 	<p>Only show this content if showJobs is true<p>
-<?php endif;>
-```
+<?php endif;?>
 
+// Alternate format
+<?= $t->showJobs->true ? <<<EOF
+<p>Only show this content if showJobs is true</p>
+EOF : null;
+?>
+```
 
 ## Working with array values
 
@@ -104,7 +125,7 @@ $options = [
 </table>
 ```
 The rows would be in this format.
-  
+
 ```
 <tr class="striped">
  <td>Fireman</td>
@@ -160,7 +181,7 @@ EOF;
 Template also allows you to register a custom function.
 
 ```
-$template->registerFunction('showRows', 
+$template->registerFunction('showRows',
 	function ($args) {
 		// the get() function returns the array itself
 		$rows = $args[0]->get();
@@ -181,4 +202,3 @@ Once the function is registered, you can call it in the template itself.
 ```
 <div><?= $t->showRows($t->rows)?></div>
 ```
-

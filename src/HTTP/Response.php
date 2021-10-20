@@ -38,6 +38,12 @@ class Response
         return $json;
     }
 
+    public static function redirect(string $url)
+    {
+        $redirect = new Redirect($url);
+        return $redirect;
+    }
+
     public static function themed(string $content)
     {
         $themed = new Themed($content);
@@ -48,12 +54,6 @@ class Response
     {
         $themed = new ThemedError($content);
         return $themed;
-    }
-
-    public static function redirect(string $url)
-    {
-        $redirect = new Redirect($url);
-        return $redirect;
     }
 
 }

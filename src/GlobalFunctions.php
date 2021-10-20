@@ -4,6 +4,9 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
+
+namespace Canopy3;
+
 use Canopy3\Exception\FileNotFound;
 
 /**

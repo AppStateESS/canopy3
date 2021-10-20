@@ -1,10 +1,20 @@
 <?php
 
 /**
+ * MIT License
+ * Copyright (c) 2021 Electronic Student Services @ Appalachian State University
  *
+ * See LICENSE file in root directory for copyright and distribution permissions.
  *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
+ */
+/**
+ * The ContentStack objects is what is accessed in the template file itself. It is expressed in the $t variable.
+ * 
+ * Example:
+ *
+ * <p><?=$t->valueName?></p>
  */
 
 namespace Canopy3\Template;

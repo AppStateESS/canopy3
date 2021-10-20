@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 /**
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
@@ -10,7 +11,7 @@ namespace Canopy3\Exception;
 class InaccessibleProperty extends \Exception
 {
 
-    public function __construct($className, $valueName)
+    public function __construct(string $className, string $valueName)
     {
         parent::__construct('Cannot access protected/private property ' . $className . '::$' . $valueName);
     }

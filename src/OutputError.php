@@ -64,7 +64,7 @@ class OutputError
         } else {
             $values = self::getDebugValues($error);
             $template = self::getTemplate();
-            return Response::themedError($template->render('500.html', $values));
+            return Response::themedError($template->render('500', $values));
         }
     }
 
@@ -73,7 +73,7 @@ class OutputError
         $values = [];
         if (Role::getCurrent()->isDeity() || Server::isDevelopmentMode()) {
             $values['reason'] = Server::isDevelopmentMode() ? 'C3_DEVELOPMENT_MODE is TRUE' :
-                    'Current user is deity';
+                'Current user is deity';
             if (isset($e->xdebug_message)) {
                 $values['debug'] = self::xdebug($e);
             } else {

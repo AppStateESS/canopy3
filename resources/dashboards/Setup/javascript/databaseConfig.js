@@ -74,7 +74,6 @@ databaseInput.addEventListener('blur', testFields())
 databaseInput.addEventListener('mouseleave', testFields())
 
 passwordInput.addEventListener('blur', checkPassword)
-passwordInput.addEventListener('mouseleave', checkPassword)
 
 passwordInput.addEventListener('keyup', () => {
   passwordConfig.innerText = passwordInput.value
@@ -103,7 +102,8 @@ const connect = () => {
     return false
   }
 
-  let requestUrl = new URL(window.location.href + 'd/Setup/Setup/dbTest')
+  let requestUrl = new URL(window.location.href.replace(/view/, 'dbTest'))
+
   requestUrl.searchParams.set('username', usernameInput.value)
   requestUrl.searchParams.set('password', passwordInput.value)
   requestUrl.searchParams.set('dbname', databaseInput.value)
@@ -120,7 +120,6 @@ const connect = () => {
       connectionError.style['display'] = 'block'
     }
   }
-
   httpRequest.open('GET', requestUrl)
   httpRequest.responseType = 'json'
   httpRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest')

@@ -1,42 +1,42 @@
 <p>Next we need to create the database <code>config/db.php</code>. This file
-  will allow us to connect to your previously created database.</p>
+  will allow us to connect to your <span class="text-success fw-bold">previously created</span> database.</p>
 <div class="alert alert-danger" id="connection-error" style="display:none"></div>
-<form method="post" id="db-form" action="./d/Setup/Setup/createDB">
-  <div class="form-group row">
+<form method="post" id="db-form" action="./createDB">
+  <div class="form-group row mb-2">
     <label for="username-input" class="col-3 col-form-label">Username</label>
     <div class="col-9">
       <input class="form-control" id="username-input" name="username" />
       <div class="badge badge-danger" id="username-error" style="display:none"></div>
     </div>
   </div>
-  <div class="form-group row">
+  <div class="form-group row mb-2">
     <label for="password-input" class="col-3 col-form-label">Password</label>
     <div class="col-9">
       <input class="form-control" id="password-input" name="password" />
-      <div class="badge badge-warning" id="password-warning" style="display:none">While a connection without a password
+      <div class="badge bg-danger" id="password-warning" style="display:none">While a connection without a password
         is possible, it is not recommended.</div>
     </div>
   </div>
-  <div class="form-group row">
+  <div class="form-group row mb-2">
     <label for="database-input" class="col-3 col-form-label">Database name</label>
     <div class="col-9">
       <input class="form-control" id="database-input" name="dbname" value="canopy3" />
-      <div class="badge badge-danger" id="database-error" style="display:none"></div>
+      <div class="badge bg-danger" id="database-error" style="display:none"></div>
     </div>
   </div>
-  <div class="form-group row">
+  <div class="form-group row mb-2">
     <label for="host-input" class="col-3 col-form-label">Host</label>
     <div class="col-9">
       <input class="form-control" id="host-input" name="host" value="localhost" />
     </div>
   </div>
-  <div class="form-group row">
+  <div class="form-group row mb-2">
     <label for="port-input" class="col-3 col-form-label">Port</label>
     <div class="col-9">
       <input class="form-control" id="port-input" name="port" />
     </div>
   </div>
-  <div class="form-group row">
+  <div class="form-group row mb-2">
     <label for="driver-input" class="col-3 col-form-label">Driver</label>
     <div class="col-9">
       <select id="driver-input" class="form-control">

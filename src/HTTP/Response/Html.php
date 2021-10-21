@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Response class for returning HTML text content.
+ *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */

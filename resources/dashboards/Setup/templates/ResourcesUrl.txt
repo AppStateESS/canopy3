@@ -1,4 +1,0 @@
-define('C3_RESOURCES_URL', '<?=$t->resourcesUrl?>');
-define('C3_DASHBOARDS_URL', C3_RESOURCES_URL . 'dashboards/');
-define('C3_PLUGINS_URL', C3_RESOURCES_URL . 'plugins/');
-define('C3_THEMES_URL', C3_RESOURCES_URL . 'themes/');

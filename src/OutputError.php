@@ -26,6 +26,13 @@ class OutputError
         }
     }
 
+    /**
+     * Returns a themedError page for a CodedException. Note that the
+     * code must have a matching #code.phtml# template file or it will not
+     * work.
+     * @param CodedException $e
+     * @return type
+     */
     private static function codedHtmlView(CodedException $e)
     {
         $values = self::getDebugValues($e);

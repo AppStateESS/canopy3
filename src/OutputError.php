@@ -32,7 +32,7 @@ class OutputError
         $code = $e->getCode();
         $template = self::getTemplate();
         HTTP\Header::singleton()->setHttpResponseCode($code);
-        return Response::themedError($template->render($code . '.html', $values));
+        return Response::themedError($template->render($code, $values));
     }
 
     private static function codedJsonView(CodedException $e)

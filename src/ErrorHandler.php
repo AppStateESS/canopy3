@@ -13,8 +13,8 @@ class ErrorHandler
 
     public static function catchError(\Throwable $error)
     {
-        switch (get_class($error)) {
-            case 'Canopy3\Exception\CodedException':
+        switch (1) {
+            case is_subclass_of($error, 'Canopy3\Exception\CodedException'):
                 $response = OutputError::codedException($error);
                 break;
 

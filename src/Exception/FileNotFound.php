@@ -7,12 +7,12 @@
 
 namespace Canopy3\Exception;
 
-class FileNotFound extends \Exception
+class FileNotFound extends CodedException
 {
 
     public function __construct(string $fileName)
     {
-        parent::__construct("File not found: $fileName");
+        parent::__construct("cannot access [$fileName]", 500);
     }
 
 }

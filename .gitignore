@@ -1,5 +1,8 @@
-/resources/themes/
+/config/db.php
+/config/resourcesUrl.php
 /config/setup.php
 /config/system.php
-/vendor/
+/resources/dashboards/
+/resources/plugins/
 /resources/themes/
+/vendor/

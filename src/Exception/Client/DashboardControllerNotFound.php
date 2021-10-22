@@ -5,14 +5,16 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3\Exception;
+namespace Canopy3\Exception\Client;
 
-class DashboardControllerNotFound extends NotFound
+use Canopy3\Exception\Client\NotFound;
+
+class DashboardControllerNotFound extends NotFound implements ClientException
 {
 
     public function __construct(string $dashboardName)
     {
-        parent::__construct("Unknown dashboard: $dashboardName");
+        parent::__construct("unknown dashboard [$dashboardName]");
     }
 
 }

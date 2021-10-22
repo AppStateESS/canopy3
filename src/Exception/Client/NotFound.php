@@ -5,15 +5,17 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3\Exception;
+namespace Canopy3\Exception\Client;
 
-class NotFound extends CodedException
+use Canopy3\Exception\CodedException;
+
+class NotFound extends CodedException implements ClientException
 {
 
     public function __construct(string $message = null)
     {
         if (is_null($message)) {
-            $message = 'Page not found';
+            $message = 'Resource not found';
         }
         parent::__construct($message, 404);
     }

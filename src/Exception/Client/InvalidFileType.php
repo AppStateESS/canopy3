@@ -11,9 +11,9 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3\Exception;
+namespace Canopy3\Exception\Client;
 
-class InvalidFileType extends \Exception
+class InvalidFileType extends CodedException implements ClientException
 {
 
     /**
@@ -34,7 +34,7 @@ class InvalidFileType extends \Exception
                 $message[] = 'Received file type: [' . substr($receivedFile, $period + 1) . ']';
             }
         }
-        parent::__construct(implode(' ', $message));
+        parent::__construct(implode(' ', $message),);
     }
 
 }

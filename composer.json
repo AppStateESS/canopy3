@@ -1,6 +1,6 @@
 {
   "require": {
-    "doctrine/orm": "*",
+    "doctrine/orm": "^2.6.2",
     "oomphinc/composer-installers-extender": "^2.0",
     "appstateess/canopy3-theme-simple": "dev-master"
   },

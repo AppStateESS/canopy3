@@ -1,29 +1,29 @@
 <?php
 
 /**
- *
- *
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-function DashboardLoader(string $filename, string $directory)
+function DashboardLoader(string $filename, string $classDirectory)
 {
-    $dashboard = stristr($directory, '/', true);
+    $dashboard = stristr($classDirectory, '/', true);
     if ($dashboard) {
-        $className = stristr($directory, '/');
-        return C3_DASHBOARDS_DIR . "$dashboard/src{$className}/{$filename}.php";
+        $dashboardDirectory = \Canopy3\Dashboard::singleton()->getDirectory($dashboard);
+        $className = stristr($classDirectory, '/');
+        return C3_DASHBOARDS_DIR . "$dashboardDirectory/src{$className}/{$filename}.php";
     } else {
-        return C3_DASHBOARDS_DIR . "$directory/src/{$filename}.php";
+        return C3_DASHBOARDS_DIR . "$classDirectory/src/{$filename}.php";
     }
 }
 
-function PluginLoader(string $filename, string $directory)
+function PluginLoader(string $filename, string $classDirectory)
 {
-    $plugin = stristr($directory, '/', true);
+    $plugin = stristr($classDirectory, '/', true);
     if ($plugin) {
-        $className = stristr($directory, '/');
-        return C3_PLUGINS_DIR . "$plugin/src{$className}/{$filename}.php";
+        $pluginDirectory = \Canopy3\Plugin::singleton()->getDirectory($plugin);
+        $className = stristr($classDirectory, '/');
+        return C3_DASHBOARDS_DIR . "$pluginDirectory/src{$className}/{$filename}.php";
     } else {
-        return C3_PLUGINS_DIR . "$directory/src/{$filename}.php";
+        return C3_DASHBOARDS_DIR . "$classDirectory/src/{$filename}.php";
     }
 }

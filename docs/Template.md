@@ -202,3 +202,11 @@ Once the function is registered, you can call it in the template itself.
 ```
 <div><?= $t->showRows($t->rows)?></div>
 ```
+
+## Home URL
+If you need the URL to the home directory, use the permanent value ```homeUrl```.
+```
+<form method="post" action="<?=$t->homeUrl?>p/MyPlugin/">
+...
+</form>
+```

@@ -25,9 +25,7 @@ use Canopy3\OutputError;
 set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
 
 // Determines if setup is required
-if (defined('C3_TEST_SETUP') && C3_TEST_SETUP) {
-    require_once C3_DIR . 'src/Setup.php';
-}
+
 $router = Router::singleton();
 $response = $router->execute();
 Response::execute($response);

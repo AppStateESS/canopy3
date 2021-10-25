@@ -19,11 +19,11 @@ use Canopy3\HTTP\Request;
 use Canopy3\HTTP\Server;
 use Canopy3\HTTP\Response;
 use Canopy3\Exception\CodedException;
-use Canopy3\Exception\DashboardControllerNotFound;
+use Canopy3\Exception\Client\DashboardControllerNotFound;
 use Canopy3\Exception\PluginControllerNotFound;
 use Canopy3\Exception\RouterCannotExecute;
 use Canopy3\Exception\UnknownRequestMethod;
-use Canopy3\Exception\EmptyResponse;
+use Canopy3\Exception\Client\EmptyResponse;
 
 class Router
 {
@@ -83,6 +83,12 @@ class Router
     private string $method = 'GET';
 
     /**
+     * An object of plugin information
+     * @var stdClass
+     */
+    private \stdClass $pluginData;
+
+    /**
      * Requested element id for a view, list, put, etc.
      * @var int
      */
@@ -127,7 +133,7 @@ class Router
     {
         $this->loadController();
         $response = $this->controller->{$this->method}($this->command,
-                $this->isAjax);
+            $this->isAjax);
 
         if (is_null($response)) {
             throw new EmptyResponse($this->controllerClassName, $this->method,
@@ -150,15 +156,6 @@ class Router
         ];
     }
 
-    public function loadController()
-    {
-        if (!isset($this->controllerClassName)) {
-            throw new RouterCannotExecute();
-        }
-        $controller = new $this->controllerClassName;
-        $this->setController($controller);
-    }
-
     public function methodAllowed(string $method): bool
     {
         return in_array(strtoupper($method), self::allowedMethods);
@@ -169,7 +166,7 @@ class Router
         $this->command = $command;
     }
 
-    public function setController(object $controller)
+    public function setController(\Canopy3\Controller $controller)
     {
         $this->controller = $controller;
         $this->controllerClassName = get_class($controller);
@@ -208,7 +205,7 @@ class Router
     }
 
     /**
-     * Returns an array from a slashed uri. Removes trailing and double slashes.
+     * Returns an array from a slashed URI. Removes trailing and double slashes.
      * @return array
      */
     private function getRequestUriArray()
@@ -222,8 +219,23 @@ class Router
             return false;
         }
         $cleanedUri = str_replace('//', '/',
-                preg_replace('@/$@', '', $requestUri));
+            preg_replace('@/$@', '', $requestUri));
         return explode('/', $cleanedUri);
+    }
+
+    /**
+     * Run on execute command.
+     * Creates a new controller object based on the controllerClassName value.
+     * This object becomes the controller for the router.
+     * @throws RouterCannotExecute
+     */
+    private function loadController()
+    {
+        if (!isset($this->controllerClassName)) {
+            throw new RouterCannotExecute();
+        }
+        $controller = new $this->controllerClassName;
+        $this->setController($controller);
     }
 
     /**
@@ -290,16 +302,16 @@ class Router
                 break;
 
             default:
-                throw new CodedException("Uknown resource controller $controllerName",
+                throw new CodedException("Unknown resource controller $controllerName",
                         404);
         }
     }
 
     /**
-     * Looks at the request uri to determine what type of controller should be
+     * Looks at the request URI to determine what type of controller should be
      * returned. For plugins and dashboards, the Library is the name of package
-     * (the second uri section). The controller name is pulled from the third
-     * uri section.
+     * (the second URI section). The controller name is pulled from the third
+     * URI section.
      * If not a plugin or dashboard, a data resource is assumed and the
      * appropriate data type controller set.
      *
@@ -332,7 +344,8 @@ class Router
         if (empty($requestUriArray)) {
             throw new CodedException('Could not load resource library', 404);
         }
-        $this->library = array_shift($requestUriArray);
+        $this->setLibrary(array_shift($requestUriArray));
+
         if (!empty($requestUriArray)) {
             $this->controllerName = array_shift($requestUriArray);
         } else {

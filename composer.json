@@ -2,7 +2,8 @@
   "require": {
     "doctrine/orm": "^2.6.2",
     "oomphinc/composer-installers-extender": "^2.0",
-    "appstateess/canopy3-theme-simple": "dev-master"
+    "appstateess/canopy3-theme-simple": "dev-master",
+    "appstateess/canopy3-dashboard-setup": "dev-master"
   },
   "extra": {
     "installer-types": [

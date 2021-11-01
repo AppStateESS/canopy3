@@ -35,3 +35,12 @@ function requireConfigFile(string $filePath)
         throw new FileNotFound($configFile);
     }
 }
+
+function getDoctrineConnection()
+{
+    if (!is_file(C3_CONFIG_DIR . 'db.php')) {
+        throw new FileNotFound('db.php');
+    }
+    include C3_CONFIG_DIR . 'db.php';
+    return \Doctrine\DBAL\DriverManager::getConnection($connectionParams);
+}

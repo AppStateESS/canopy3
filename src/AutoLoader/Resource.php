@@ -4,6 +4,9 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
+require_once C3_DIR . 'src/Dashboard.php';
+require_once C3_DIR . 'src/Plugin.php';
+
 function DashboardLoader(string $filename, string $classDirectory)
 {
     $dashboard = stristr($classDirectory, '/', true);

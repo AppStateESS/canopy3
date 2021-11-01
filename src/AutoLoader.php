@@ -15,9 +15,9 @@ class AutoLoader
 
     public static function initialize()
     {
+        // Composer autoloader
         require_once C3_DIR . 'vendor/autoload.php';
 
-        // Composer autoloader
         // Canopy3 and resource autoloader
         spl_autoload_register(fn($namespaceString) => self::run($namespaceString));
     }

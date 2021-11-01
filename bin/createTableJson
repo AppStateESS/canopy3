@@ -1,0 +1,112 @@
+#!/usr/bin/env php
+<?php
+/**
+ * MIT License
+ * Copyright (c) 2021 Electronic Student Services @ Appalachian State University
+ *
+ * See LICENSE file in root directory for copyright and distribution permissions.
+ *
+ * @author Matthew McNaney <mcnaneym@appstate.edu>
+ * @license https://opensource.org/licenses/MIT
+ */
+require_once dirname(__DIR__, 1) . '/DirectoryDefines.php';
+require_once C3_DIR . 'src/Resource.php';
+require_once C3_DIR . 'src/AutoLoader.php';
+\Canopy3\AutoLoader::initialize();
+
+function message($message)
+{
+    echo $message;
+    echo "\n";
+    exit();
+}
+
+function help()
+{
+    $help = <<<EOF
+Usage: createTableJson [-c "\\name\\of\\object\\class"|-f "path/to/class/file"] -d path/to/destination
+You may use -c or -f, but not both.
+EOF;
+    message($help);
+}
+
+function run(array $argv)
+{
+    if (empty($argv[1])) {
+        help();
+    }
+    try {
+        array_shift($argv);
+        $filepath = null;
+        $className = null;
+        $classPath = null;
+
+        for ($i = 0; $i < count($argv); $i++) {
+            $argument = $argv[$i];
+
+            switch ($argument) {
+                case '-c':
+                    if (!empty($classPath)) {
+                        message('Class file path already assigned');
+                    }
+                    $i++;
+                    if (!isset($argv[$i])) {
+                        message('Class file not set for option -c');
+                    }
+                    $className = $argv[$i];
+                    break;
+
+                case '-d':
+                    $i++;
+                    $filePath = $argv[$i];
+                    break;
+
+                case '-f':
+                    if (!empty($className)) {
+                        message('Class name already assigned');
+                    }
+                    if (!isset($argv[$i])) {
+                        message('Class name not set for option -c');
+                    }
+                    $i++;
+                    $classPath = $argv[$i];
+                    break;
+
+                default:
+                    help();
+            }
+        }
+        if ((empty($className) && empty($classPath)) || empty($filePath)) {
+            help();
+        }
+        if (is_file($filePath)) {
+            message("$filePath exists.");
+        }
+
+        if (!empty($classPath)) {
+            if (!is_file($classPath)) {
+                message("File not found: $classPath");
+            }
+            $classes = get_declared_classes();
+            require $classPath;
+            $found = array_diff(get_declared_classes(), $classes);
+            if (empty($found)) {
+                message("No class found in file: $classPath");
+            } elseif (count($found) > 1) {
+                message('Too many classes found in this file.');
+            }
+
+            $className = array_pop($found);
+        }
+
+        if (!class_exists($className)) {
+            message('Could not find class name');
+        }
+        Canopy3\Resource::createDescribeFile($className, $filePath);
+        message("Created file: $filePath");
+    } catch (Exception $ex) {
+        message($ex->getMessage());
+    }
+}
+
+run($argv);

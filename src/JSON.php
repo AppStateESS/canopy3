@@ -18,30 +18,31 @@ use Canopy3\Exception\CodedException;
 class JSON
 {
 
-    const decodeConstants = false;
-    const encodeConstants = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK;
+    const jsonDepth = 512;
+    const encodeFlags = 0;
+    const decodeFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK;
 
-    public static function getFileData(string $filePath, int $decodeConstants = null)
+    public static function getFileData(string $filePath, int $decodeFlags = 0)
     {
         if (!is_file($filePath)) {
             return false;
         }
         $dataJson = file_get_contents($filePath);
-        $data = self::decode($dataJson, $decodeConstants);
+        $data = self::decode($dataJson, $decodeFlags);
         if (!is_object($data) && !is_array($data)) {
             throw new CodedException("JSON file [$filePath] is corrupted", 500);
         }
         return $data;
     }
 
-    public static function decode($value, bool $constants = null)
+    public static function decode(string $value, int $flags = 0)
     {
-        return json_decode($value, $constants ?? self::decodeConstants);
+        return json_decode($value, null, self::jsonDepth, $flags ?? self::decodeFlags);
     }
 
-    public static function encode(string $json, int $constants = null)
+    public static function encode($value, int $flags = 0)
     {
-        return json_encode($value, $constants ?? self::encodeConstants);
+        return json_encode($value, $flags ?? self::encodeFlags);
     }
 
 }

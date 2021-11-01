@@ -1,6 +1,4 @@
 #!/usr/bin/env php
-
-
 <?php
 /**
  * MIT License
@@ -11,8 +9,8 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-//require_once '../DirectoryDefines.php';
-require_once 'src/DashboardFunctions.php';
+require_once dirname(__DIR__, 1) . '/DirectoryDefines.php';
+require_once C3_DIR . 'src/DashboardFunctions.php';
 
 function message($message)
 {

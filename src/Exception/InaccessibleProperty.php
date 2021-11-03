@@ -13,7 +13,7 @@ class InaccessibleProperty extends \Exception
 
     public function __construct(string $className, string $valueName)
     {
-        parent::__construct('Cannot access protected/private property ' . $className . '::$' . $valueName);
+        parent::__construct('cannot access protected/private property ' . $className . '::$' . $valueName);
     }
 
 }

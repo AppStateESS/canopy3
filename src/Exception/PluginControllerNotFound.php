@@ -7,7 +7,7 @@
 
 namespace Canopy3\Exception;
 
-class PluginControllerNotFound extends NotFound
+class PluginControllerNotFound extends FileNotFound
 {
 
     public function __construct(string $pluginName)

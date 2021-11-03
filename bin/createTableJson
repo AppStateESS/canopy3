@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 require_once dirname(__DIR__, 1) . '/DirectoryDefines.php';
-require_once C3_DIR . 'src/Resource.php';
+require_once C3_DIR . 'src/FieldGenerator.php';
 require_once C3_DIR . 'src/AutoLoader.php';
 \Canopy3\AutoLoader::initialize();
 
@@ -93,16 +93,15 @@ function run(array $argv)
             if (empty($found)) {
                 message("No class found in file: $classPath");
             } elseif (count($found) > 1) {
-                message('Too many classes found in this file.');
+                $className = array_shift($found);
+            } else {
+                $className = array_pop($found);
             }
-
-            $className = array_pop($found);
         }
-
         if (!class_exists($className)) {
             message('Could not find class name');
         }
-        Canopy3\Resource::createDescribeFile($className, $filePath);
+        Canopy3\FieldGenerator::createFieldFile($className, $filePath);
         message("Created file: $filePath");
     } catch (Exception $ex) {
         message($ex->getMessage());

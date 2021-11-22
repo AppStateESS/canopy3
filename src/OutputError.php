@@ -78,7 +78,7 @@ class OutputError
     private static function getDebugValues(\Throwable $e)
     {
         $values = [];
-        if (Role::getCurrent()->isDeity() || Server::isDevelopmentMode()) {
+        if (Server::isDevelopmentMode()) {
             $values['reason'] = Server::isDevelopmentMode() ? 'C3_DEVELOPMENT_MODE is TRUE' :
                 'Current user is deity';
             if (isset($e->xdebug_message)) {

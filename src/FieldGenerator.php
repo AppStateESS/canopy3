@@ -50,7 +50,12 @@ class FieldGenerator
         foreach ($properties as $property) {
             $options = [];
             $name = $property->name;
-            $type = $property->getType()->getName();
+            $propType = $property->getType();
+            if ($propType === null) {
+                throw new \Exception("The type for property [$name] was not found.");
+            }
+            $type = $propType->getName();
+
             $defaultProperties = $property->getDeclaringClass()->getDefaultProperties();
             $options['default'] = $defaultProperties[$name] ?? null;
             $datatype = self::fieldDefault($type);

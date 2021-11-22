@@ -10,7 +10,7 @@
 namespace Canopy3\Theme;
 
 use Canopy3\Theme\Page;
-use Canopy3\Variable\StringVar;
+use Canopy3\VariableType\TextOnly;
 
 class Structure extends \Canopy3\AbstractConstruct
 {
@@ -19,7 +19,7 @@ class Structure extends \Canopy3\AbstractConstruct
      * Title of theme
      * @var string
      */
-    private StringVar $title;
+    private string $title;
 
     /**
      * Directory of theme under theme directory.
@@ -31,7 +31,7 @@ class Structure extends \Canopy3\AbstractConstruct
      * Description of theme
      * @var string
      */
-    private StringVar $description;
+    private string $description;
 
     /**
      * Page templates.
@@ -76,7 +76,7 @@ class Structure extends \Canopy3\AbstractConstruct
 
     public function setDescription(string $description)
     {
-        $this->description->set($description);
+        $this->description = TextOnly::filter($description);
     }
 
     public function getPage($pageName)

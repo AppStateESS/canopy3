@@ -9,7 +9,6 @@
 
 namespace Canopy3\HTTP;
 
-use Canopy3\Variable\StringVar;
 use Canopy3\Exception\InaccessibleProperty;
 
 class Header
@@ -20,23 +19,8 @@ class Header
     private int $httpResponseCode = 200;
     private array $scripts = [];
     private array $scriptValues = [];
-    private StringVar $siteTitle;
-    private StringVar $pageTitle;
-
-    private function __construct()
-    {
-        $this->siteTitle = new StringVar;
-        $this->pageTitle = new StringVar;
-    }
-
-    public function __get($varName)
-    {
-        switch ($varName) {
-            case 'pageTitle':
-                return $this->pageTitle->get();
-        }
-        throw new InaccessibleProperty(__class__, $varName);
-    }
+    private string $siteTitle;
+    private string $pageTitle;
 
     public function addScript(string $src, ?array $attributes = null)
     {

@@ -10,26 +10,56 @@
 namespace Canopy3;
 
 use Canopy3\FieldGenerator;
-use Canopy3\Traits\MagicGetSetTrait;
 
-abstract class AbstractResource
+abstract class AbstractResource extends AbstractConstruct
 {
 
-    use MagicGetSetTrait;
+    /**
+     * Primary key for Resources
+     * @var int
+     */
+    protected int $id;
 
-    public function __get($valueName)
+    public function getId()
     {
-        return self::getByMethod($valueName);
+        return $this->id;
     }
 
-    public function __set($valueName, $value)
+    /**
+     * Returns an array of object properties.
+     * @return array
+     */
+    public function getProperties(): array
     {
-        return self::setByMethod($valueName, $value);
+        $reflection = new \ReflectionClass(get_called_class());
+        $properties = $reflection->getProperties();
+        foreach ($properties as $p) {
+            $list[] = $p->name;
+        }
+        return $list;
+    }
+
+    public function getValues()
+    {
+        $properties = $this->getProperties();
+        foreach ($properties as $p) {
+            $list[$p] = self::getByMethod($p);
+        }
+        return $list;
     }
 
     public function getTableProperties(): array
     {
         return FieldGenerator::deriveFields($this);
+    }
+
+    public function setValues(array $values)
+    {
+        $properties = $this->getProperties();
+        foreach ($properties as $p) {
+            $list[$p] = self::setByMethod($values[$p]);
+        }
+        return $list;
     }
 
 }

@@ -7,7 +7,7 @@
 
 namespace Canopy3\Role;
 
-class Guest extends \Canopy3\Role
+class Guest extends \Canopy3\AbstractRole
 {
-//put your code here
+
 }

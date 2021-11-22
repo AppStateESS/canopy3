@@ -7,32 +7,33 @@
 
 namespace Canopy3;
 
-use Canopy3\Role\Admin;
-use Canopy3\Role\Deity;
-use Canopy3\Role\Guest;
-use Canopy3\Role\Logged;
+define('ROLE_GUEST', 0);
+define('ROLE_LOGGED', 1);
+define('ROLE_ADMIN', 2);
 
-class Role
+class AbstractRole
 {
+
+    protected int $type = ROLE_GUEST;
 
     public function isAdmin()
     {
-        return false;
-    }
-
-    public function isDeity()
-    {
-        return false;
+        return $this->type === ROLE_ADMIN;
     }
 
     public function isGuest()
     {
-        return false;
+        return $this->type === ROLE_GUEST;
     }
 
     public function isLogged()
     {
-        return false;
+        return $this->type === ROLE_LOGGED;
+    }
+
+    public function setType(int $type)
+    {
+        $this->type = $type;
     }
 
     public static function getCurrent()

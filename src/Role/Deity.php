@@ -3,6 +3,7 @@
 /**
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
+ * @deprecated
  */
 
 namespace Canopy3\Role;

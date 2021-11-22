@@ -3,7 +3,8 @@
     "doctrine/dbal": "^3.1",
     "oomphinc/composer-installers-extender": "^2.0",
     "appstateess/canopy3-theme-simple": "dev-master",
-    "appstateess/canopy3-dashboard-setup": "dev-master"
+    "appstateess/canopy3-dashboard-setup": "^1.0",
+    "ezyang/htmlpurifier": "^4.13"
   },
   "extra": {
     "installer-types": [
@@ -23,5 +24,18 @@
       ]
     }
   },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/var/www/html/c3-themes/canopy3-theme-simple",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "/var/www/html/c3-dashboards/canopy3-dashboard-setup"
+    }
+  ],
   "minimum-stability": "stable"
 }

@@ -11,6 +11,7 @@ namespace Canopy3\Theme;
 
 use Canopy3\Theme\Page;
 use Canopy3\VariableType\TextOnly;
+use Canopy3\VariableType\Html;
 
 class Structure extends \Canopy3\AbstractConstruct
 {
@@ -52,26 +53,24 @@ class Structure extends \Canopy3\AbstractConstruct
     private string $defaultPage;
     public Page $currentPage;
 
-    public function __construct()
-    {
-        $this->title = new StringVar;
-        $this->description = new StringVar;
-        $this->description->allowHtml(true)->allowedTags(['p', 'strong', 'b', 'i', 'em', 'a']);
-    }
-
-    public function setDirectory($directory)
-    {
-        $this->directory = preg_match('@/?@', $directory) ? $directory : $directory . '/';
-    }
-
     public function getDirectory()
     {
         return $this->directory;
     }
 
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    public function setDirectory($directory)
+    {
+        $this->directory = \Canopy3\endWithSlash($directory);
+    }
+
     public function setTitle(string $title)
     {
-        $this->title->set($title);
+        $this->title = TextOnly::filter($title);
     }
 
     public function setDescription(string $description)
@@ -111,7 +110,6 @@ class Structure extends \Canopy3\AbstractConstruct
         if (empty($this->pages)) {
             throw new \Exception('Can not set default before templates');
         }
-        $defaultPage = StringVar::filter($defaultPage);
         if (!$this->pageExists($defaultPage)) {
             throw new \Exception("Default page template '$defaultPage' is not included in template listing");
         }

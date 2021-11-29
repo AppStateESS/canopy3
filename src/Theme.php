@@ -32,7 +32,7 @@ class Theme
     private Structure $structure;
 
     public function __construct(string $themeName = C3_DEFAULT_THEME,
-            string $page = null)
+        string $page = null)
     {
         $this->themeName = trim($themeName);
         $this->loadStructure($page);
@@ -101,7 +101,7 @@ class Theme
         $values = $this->getContent();
 
         $values['header'] = $header->view();
-        $values['pageTitle'] = $header->pageTitle;
+        $values['pageTitle'] = $header->getPageTitle();
         $values['themeUrl'] = $this->getThemeUrl();
         $values['themeDirectory'] = $this->getThemeDirectory();
         return $template->render($fileName, $values);

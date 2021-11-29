@@ -35,3 +35,8 @@ function requireConfigFile(string $filePath)
         throw new FileNotFound($configFile);
     }
 }
+
+function endWithSlash(string $directory): string
+{
+    return preg_match('@/?@', $directory) ? $directory : $directory . '/';
+}

@@ -11,21 +11,28 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3;
+namespace Canopy3\Database;
+
+use Doctrine\DBAL\Types\Type;
 
 class FieldGenerator
 {
 
-    public static function deriveFieldsAsJson($resource)
+    static $allowFieldTypes = [];
+
+    public static function createFieldFile($resource, string $filePath, bool $overwrite = false)
     {
-        $fields = self::deriveFields($resource, true);
-        return \Canopy3\JSON::encode($fields, JSON_PRETTY_PRINT);
+        $json = self::deriveFieldsAsJson($resource);
+        if ($overwrite && is_file($filePath)) {
+            unlink($filePath);
+        }
+        file_put_contents($filePath, $json);
     }
 
     /**
      * Returns an associative array describing the class values.
      *
-     * @param mixed $resource Object or class name string
+     * @param mixed $resource Object value or class name string
      * @return array
      */
     public static function deriveFields($resource, bool $asArray = false)
@@ -46,9 +53,44 @@ class FieldGenerator
         $structure['tableName'] = strtolower($tableName);
         $properties = $reflection->getProperties();
 
-        $objectInfo = [];
+        if (empty($properties)) {
+            throw new \Exception("No properties found in table $tableName");
+        }
+
+        return self::fillStructureWithProperties($structure, $properties, $asArray);
+    }
+
+    public static function deriveFieldsAsJson($resource)
+    {
+        $fields = self::deriveFields($resource, true);
+        return \Canopy3\JSON::encode($fields, JSON_PRETTY_PRINT);
+    }
+
+    public static function fieldDefault(string $type): string
+    {
+        switch ($type) {
+            case 'int':
+                return 'integer';
+
+            case 'bool':
+                return 'boolean';
+
+            case 'DateTime':
+                return 'datetimetz';
+
+            case 'string':
+            case 'float':
+            case 'double':
+                return $type;
+        }
+    }
+
+    private static function fillStructureWithProperties(array $structure, array $properties, $asArray = false): array
+    {
+
         foreach ($properties as $property) {
-            $options = [];
+            $options = self::parsePropertyComment($property);
+
             $name = $property->name;
             $propType = $property->getType();
             if ($propType === null) {
@@ -57,46 +99,63 @@ class FieldGenerator
             $type = $propType->getName();
 
             $defaultProperties = $property->getDeclaringClass()->getDefaultProperties();
-            $options['default'] = $defaultProperties[$name] ?? null;
+            if (isset($defaultProperties[$name])) {
+                $options['default'] = $defaultProperties[$name];
+            }
+
             $datatype = self::fieldDefault($type);
-            $options['notNull'] = $options['default'] !== null;
+            $options['notNull'] = $options['notNull'] ?? true;
             if ($name === 'id' && $type === 'int') {
                 $options['isPrimary'] = true;
             }
             $field = new FieldType($name, $datatype, $options);
+
             if ($asArray) {
                 $structure['fields'][] = $field->asArray();
             } else {
                 $structure['fields'][] = $field;
             }
         }
-
         return $structure;
     }
 
-    public static function createFieldFile($resource, string $filePath)
+    private static function parsePropertyComment(\ReflectionProperty $property)
     {
-        $json = self::deriveFieldsAsJson($resource);
+        $propertyComment = $property->getDocComment();
+        $propertyComment = preg_replace('@[/*]+@', '', $propertyComment);
+        $commentRows = explode("\n", $propertyComment);
+        $options = [];
+        foreach ($commentRows as $row) {
+            $row = trim($row);
+            if (strpos($row, '@') === 0) {
+                preg_match('/^@(\w+) (\w+)/', $row, $matches);
+                if (empty($matches)) {
+                    continue;
+                }
+                list($comment, $name, $value) = $matches;
+                switch ($name) {
+                    case 'length':
+                    case 'scale':
+                        $value = (int) $value;
+                        break;
 
-        file_put_contents($filePath, $json);
-    }
+                    case 'unsigned':
+                        $value = (bool) $value;
+                        break;
 
-    public static function fieldDefault($type)
-    {
-        switch ($type) {
-            case 'int':
-                return 'integer';
-            case 'string':
-                return 'string';
-            case 'float':
-                return 'float';
-            case 'double':
-                return 'double';
-            case 'bool':
-                return 'boolean';
-            case 'DateTime':
-                return 'datetimetz';
+                    case 'datatype':
+                        if (!Type::hasType($value)) {
+                            continue 2;
+                        }
+                        break;
+
+                    default:
+                        continue 2;
+                }
+                $options[$name] = $value;
+            }
         }
+        return $options;
     }
 
 }

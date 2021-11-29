@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Canopy3;
+namespace Canopy3\Database;
 
 use Doctrine\DBAL\Types\Type;
 
@@ -56,16 +56,18 @@ class FieldType
     private bool $isPrimary = false;
 
     /**
-     * For numeric fields, determines if unsigned. Default true indicates
+     * For numeric fields, determines if unsigned. True indicates
      * this will always a positive number.
+     * Unsigned is MySQL specific and not cross platform compatible.
      * @var bool
      */
-    private bool $unsigned = true;
+    private bool $unsigned = false;
 
     public function __construct($name, $datatype, array $options = [])
     {
         $this->name = $name;
         $this->setDataType($datatype);
+
         foreach ($options as $varName => $value) {
             $this->__set($varName, $value);
         }

@@ -10,6 +10,7 @@
 namespace Canopy3\HTTP;
 
 use Canopy3\Exception\InaccessibleProperty;
+use Canopy3\VariableType\TextOnly;
 
 class Header
 {
@@ -19,8 +20,8 @@ class Header
     private int $httpResponseCode = 200;
     private array $scripts = [];
     private array $scriptValues = [];
-    private string $siteTitle;
-    private string $pageTitle;
+    private string $siteTitle = '';
+    private string $pageTitle = '';
 
     public function addScript(string $src, ?array $attributes = null)
     {
@@ -41,12 +42,22 @@ class Header
     public function getFullTitle()
     {
         $tag = new \Canopy3\Tag(null, 'title');
-        if ($this->pageTitle->isEmpty()) {
-            $tag->child = $this->siteTitle->get();
+        if (empty($this->pageTitle)) {
+            $tag->child = $this->siteTitle;
         } else {
-            $tag->child = $this->pageTitle->get() . ' - ' . $this->siteTitle->get();
+            $tag->child = $this->pageTitle . ' - ' . $this->siteTitle;
         }
         return $tag->print();
+    }
+
+    public function getPageTitle()
+    {
+        return $this->pageTitle;
+    }
+
+    public function getSiteTitle()
+    {
+        return $this->siteTitle;
     }
 
     public function getScripts()
@@ -122,12 +133,12 @@ class Header
 
     public function setSiteTitle($title)
     {
-        $this->siteTitle->set($title);
+        $this->siteTitle = \Canopy3\VariableType\TextOnly::filter($title);
     }
 
     public function setPageTitle($title)
     {
-        $this->pageTitle->set($title);
+        $this->pageTitle = $title;
     }
 
     public function sendContentType(string $contentType = null)

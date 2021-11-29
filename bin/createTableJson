@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 require_once dirname(__DIR__, 1) . '/DirectoryDefines.php';
-require_once C3_DIR . 'src/FieldGenerator.php';
+require_once C3_DIR . 'src/Database/FieldGenerator.php';
 require_once C3_DIR . 'src/AutoLoader.php';
 \Canopy3\AutoLoader::initialize();
 
@@ -24,14 +24,16 @@ function message($message)
 function help()
 {
     $help = <<<EOF
-Usage: createTableJson [-c "\\name\\of\\object\\class"|-f "path/to/class/file"] -d path/to/destination
+Usage: createTableJson [-c "\\name\\of\\object\\class"|-f "path/to/class/file"] -d path/to/destination --forceOverwrite
 You may use -c or -f, but not both.
+--forceOverwrite will replace a current file with the update
 EOF;
     message($help);
 }
 
 function run(array $argv)
 {
+    $overwrite = false;
     if (empty($argv[1])) {
         help();
     }
@@ -72,6 +74,11 @@ function run(array $argv)
                     $classPath = $argv[$i];
                     break;
 
+                case '--forceOverwrite':
+                    $overwrite = true;
+                    break;
+
+
                 default:
                     help();
             }
@@ -79,7 +86,7 @@ function run(array $argv)
         if ((empty($className) && empty($classPath)) || empty($filePath)) {
             help();
         }
-        if (is_file($filePath)) {
+        if (is_file($filePath) && !$overwrite) {
             message("$filePath exists.");
         }
 
@@ -101,7 +108,7 @@ function run(array $argv)
         if (!class_exists($className)) {
             message('Could not find class name');
         }
-        Canopy3\FieldGenerator::createFieldFile($className, $filePath);
+        Canopy3\Database\FieldGenerator::createFieldFile($className, $filePath, $overwrite);
         message("Created file: $filePath");
     } catch (Exception $ex) {
         message($ex->getMessage());

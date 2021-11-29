@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Canopy3;
 
 use Canopy3\Exception\CodedException;
+use Canopy3\Exception\FileNotFound;
 
 class JSON
 {
@@ -25,7 +26,7 @@ class JSON
     public static function getFileData(string $filePath, int $decodeFlags = 0)
     {
         if (!is_file($filePath)) {
-            return false;
+            throw new FileNotFound($filePath);
         }
         $dataJson = file_get_contents($filePath);
         $data = self::decode($dataJson, $decodeFlags);

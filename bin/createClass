@@ -18,7 +18,7 @@ require_once './src/createClass/SubTemplates.php';
 function help()
 {
     $help = <<<EOF
-Usage: createClass -n className -p propertyname1 propertyname2
+Usage: createClass -n className -p propertyname1 propertyname2 > ./ClassFile.php
 EOF;
     message($help);
 }
@@ -57,7 +57,6 @@ function run(array $argv)
 
                 default:
                     if ($collectProperties) {
-                        echo $argument;
                         $properties[] = $argument;
                     } else {
                         help();

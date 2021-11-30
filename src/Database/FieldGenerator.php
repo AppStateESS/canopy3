@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Canopy3\Database;
 
 use Doctrine\DBAL\Types\Type;
+use Canopy3\Exception\DirectoryPermissionDenied;
 
 class FieldGenerator
 {
@@ -24,6 +25,9 @@ class FieldGenerator
     {
         $json = self::deriveFieldsAsJson($resource);
         if ($overwrite && is_file($filePath)) {
+            if (!is_writable($filePath)) {
+                throw new DirectoryPermissionDenied($filePath);
+            }
             unlink($filePath);
         }
         file_put_contents($filePath, $json);
@@ -47,9 +51,9 @@ class FieldGenerator
         } else {
             throw new \Exception('wrong resource type [' . gettype($resource) . ']');
         }
-        $shortName = $reflection->getShortName();
-        $className = $reflection->getName();
-        $tableName = preg_replace('@^(dashboard|plugin)\\\(\w+)\\\.*\w+@i', '\\2', $className) . '_' . $shortName;
+
+        $tableName = self::getTableName($reflection);
+
         $structure['tableName'] = strtolower($tableName);
         $properties = $reflection->getProperties();
 
@@ -68,6 +72,9 @@ class FieldGenerator
 
     public static function fieldDefault(string $type): string
     {
+        if (Type::hasType($type)) {
+            return $type;
+        }
         switch ($type) {
             case 'int':
                 return 'integer';
@@ -75,28 +82,35 @@ class FieldGenerator
             case 'bool':
                 return 'boolean';
 
+            case 'double':
+                return 'decimal';
+
             case 'DateTime':
                 return 'datetimetz';
 
-            case 'string':
-            case 'float':
-            case 'double':
-                return $type;
+            default:
+                return 'string';
         }
     }
 
     private static function fillStructureWithProperties(array $structure, array $properties, $asArray = false): array
     {
-
         foreach ($properties as $property) {
             $options = self::parsePropertyComment($property);
-
+            if ($options['noField']) {
+                continue;
+            }
             $name = $property->name;
             $propType = $property->getType();
             if ($propType === null) {
-                throw new \Exception("The type for property [$name] was not found.");
+                if (isset($options['datatype'])) {
+                    $type = $options['datatype'];
+                } else {
+                    $type = 'string';
+                }
+            } else {
+                $type = $propType->getName();
             }
-            $type = $propType->getName();
 
             $defaultProperties = $property->getDeclaringClass()->getDefaultProperties();
             if (isset($defaultProperties[$name])) {
@@ -119,41 +133,101 @@ class FieldGenerator
         return $structure;
     }
 
-    private static function parsePropertyComment(\ReflectionProperty $property)
+    /**
+     * Reads a reflections comments for phpdoc settings
+     * @param \Reflector $reflection
+     * @return null | array
+     */
+    private static function getDocValues(\Reflector $reflection)
     {
-        $propertyComment = $property->getDocComment();
-        $propertyComment = preg_replace('@[/*]+@', '', $propertyComment);
-        $commentRows = explode("\n", $propertyComment);
-        $options = [];
+        $comment = preg_replace('@[/*]+@', '', $reflection->getDocComment());
+        if (empty($comment)) {
+            return null;
+        }
+        $commentRows = explode("\n", $comment);
+        if (empty($commentRows)) {
+            return null;
+        }
+        $values = [];
         foreach ($commentRows as $row) {
             $row = trim($row);
-            if (strpos($row, '@') === 0) {
-                preg_match('/^@(\w+) (\w+)/', $row, $matches);
-                if (empty($matches)) {
-                    continue;
-                }
-                list($comment, $name, $value) = $matches;
-                switch ($name) {
-                    case 'length':
-                    case 'scale':
-                        $value = (int) $value;
-                        break;
-
-                    case 'unsigned':
-                        $value = (bool) $value;
-                        break;
-
-                    case 'datatype':
-                        if (!Type::hasType($value)) {
-                            continue 2;
-                        }
-                        break;
-
-                    default:
-                        continue 2;
-                }
-                $options[$name] = $value;
+            if (strpos($row, '@') !== 0) {
+                continue;
             }
+            preg_match('/^@(\w+) (\w+)/', $row, $matches);
+            if (empty($matches)) {
+                continue;
+            }
+            list(, $name, $value) = $matches;
+            $values[$name] = $value;
+        }
+
+        return $values;
+    }
+
+    /**
+     * Returns a class's @table value or a best guess from the class name.
+     * @param \Reflector $reflection
+     * @return string
+     */
+    private static function getTableName(\Reflector $reflection): string
+    {
+        $values = self::getDocValues($reflection);
+        if ($values['table']) {
+            return $values['table'];
+        } else {
+            $shortName = $reflection->getShortName();
+            $className = $reflection->getName();
+            $tableName = preg_replace('@^(dashboard|plugin)\\\(\w+)\\\.*\w+@i', '\\2', $className) . '_' . $shortName;
+            return strtolower($tableName);
+        }
+    }
+
+    /**
+     * Examines a property's comment line for field information.
+     * @param \ReflectionProperty $property
+     * @return array
+     */
+    private static function parsePropertyComment(\ReflectionProperty $property): array
+    {
+        $propertyValues = self::getDocValues($property);
+        if (empty($propertyValues)) {
+            return [];
+        }
+        $options = [];
+        foreach ($propertyValues as $name => $value) {
+            switch ($name) {
+                case 'length':
+                case 'scale':
+                    $value = (int) $value;
+                    break;
+
+                case 'unsigned':
+                case 'noField':
+                case 'notNull':
+                case 'isPrimary':
+                    $value = is_string($value) ? strtolower($value) === 'true' : boolval($value);
+                    break;
+
+                case 'var':
+                    $value = self::fieldDefault($value);
+                    if (Type::hasType($value) && !isset($options['datatype'])) {
+                        $name = 'datatype';
+                    } else {
+                        continue 2;
+                    }
+                    break;
+
+                case 'datatype':
+                    if (!Type::hasType($value)) {
+                        continue 2;
+                    }
+                    break;
+
+                default:
+                    continue 2;
+            }
+            $options[$name] = $value;
         }
         return $options;
     }

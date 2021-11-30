@@ -61,7 +61,7 @@ The first method is to test the value's existence.
 
 ```
 <?php if (isset($t->greeting)):?>
-	<p class="special-greeting"><?=$t->greeting?></p>
+  <p class="special-greeting"><?=$t->greeting?></p>
 <?php endif;?>
 ```
 or
@@ -92,7 +92,7 @@ $values['showJobs'] = true;
 ```
 <!-- then in your html file, test the value with a call to "true" or "is" -->
 <?php if ($t->showJobs->true):?>
-	<p>Only show this content if showJobs is true<p>
+  <p>Only show this content if showJobs is true<p>
 <?php endif;?>
 
 // Alternate format
@@ -114,14 +114,14 @@ The function accepts an option array.
 ```
 <?php
 $options = [
-	'rowClass'=> 'striped',
-	'order'=> ['job', 'name']
+  'rowClass'=> 'striped',
+  'order'=> ['job', 'name']
 ];
 ?>
 <table>
-	<tbody>
-	<?= $t->rows->asTableRows($options) ?>
-	</tbody>
+  <tbody>
+  <?= $t->rows->asTableRows($options) ?>
+  </tbody>
 </table>
 ```
 The rows would be in this format.
@@ -155,8 +155,8 @@ The result:
 
 ```
 <div>
-	<p>Joe is employed as the Fireman in this city.</p>
-	<p>Sally is employed as the Astronaut in this city.</p>
+  <p>Joe is employed as the Fireman in this city.</p>
+  <p>Sally is employed as the Astronaut in this city.</p>
 </div>
 ```
 
@@ -164,10 +164,10 @@ If you want to run the array through a custom function, you can use `loopFunctio
 
 ```
 function employ($values) {
-	return <<<EOF
+  return <<<EOF
 <p>
-	{$values['name']} is employed as the {$values['job']}
-	in this city.
+  {$values['name']} is employed as the {$values['job']}
+  in this city.
 </p>
 EOF;
 }
@@ -182,18 +182,18 @@ Template also allows you to register a custom function.
 
 ```
 $template->registerFunction('showRows',
-	function ($args) {
-		// the get() function returns the array itself
-		$rows = $args[0]->get();
-		foreach ($rows as $info) {
-			$content[] = <<<EOF
+  function ($args) {
+    // the get() function returns the array itself
+    $rows = $args[0]->get();
+    foreach ($rows as $info) {
+      $content[] = <<<EOF
 <p>
-	{$info['name']} likes their job as a {$info['job']}.
+  {$info['name']} likes their job as a {$info['job']}.
 </p>
 EOF;
-		}
-		return implode("\n", $content);
-	}
+    }
+    return implode("\n", $content);
+  }
 );
 ```
 

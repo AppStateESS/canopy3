@@ -34,12 +34,12 @@ class ContentStack
 
     public function __construct($template, array $values, $emptyWarning = false)
     {
-        if (empty($homeUrl)) {
+        if (Server::hasUri() && empty($this->homeUrl)) {
             $this->homeUrl = Server::getCurrentUri();
+            $this->values['homeUrl'] = $this->homeUrl;
         }
         $this->template = $template;
         $this->emptyWarning = $emptyWarning;
-        $this->values['homeUrl'] = $this->homeUrl;
         foreach ($values as $k => $v) {
             if (is_a($v, 'Canopy3\Template\Value\Value')) {
                 $this->values[$k] = $v;

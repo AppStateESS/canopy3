@@ -14,7 +14,13 @@ use Canopy3\Template;
 class ArrayValue extends Value
 {
 
-    public function asTableRows(array $options = [])
+    /**
+     * Creates a table with the array value rows.
+     * Note the table, tbody, and header tags are not in the result.
+     * @param array $options
+     * @return string
+     */
+    public function asTableRows(array $options = []): string
     {
         $rowClass = null;
         $order = null;
@@ -38,7 +44,12 @@ class ArrayValue extends Value
         return implode("\n", $table);
     }
 
-    public function loopFunction($functionName)
+    /**
+     * Calls the $functionName for each array value and implodes the result.
+     * @param string $functionName
+     * @return string
+     */
+    public function loopFunction(string $functionName): string
     {
         foreach ($this->value as $val) {
             $stack[] = $functionName($val);
@@ -46,7 +57,12 @@ class ArrayValue extends Value
         return implode("\n", $stack);
     }
 
-    public function loopInclude($fileName)
+    /**
+     * Includes another template to loop through with the values.
+     * @param string $fileName
+     * @return string
+     */
+    public function loopInclude(string $fileName): string
     {
         foreach ($this->value as $row) {
             $contentArray[] = $this->template->render($fileName, $row);
@@ -54,12 +70,27 @@ class ArrayValue extends Value
         return implode("\n", $contentArray);
     }
 
-    protected function verify($value)
+    /**
+     * Uses to the implode function to output the array value's elements.
+     * @param string $character
+     * @return string
+     */
+    public function implode(string $character): string
+    {
+        return implode($character, $this->value);
+    }
+
+    /**
+     * Verifies the value is an array.
+     * @param type $value
+     * @return bool
+     */
+    protected function verify($value): bool
     {
         return is_array($value);
     }
 
-    private function orderedRow($order, $row)
+    private function orderedRow($order, $row): string
     {
         foreach ($order as $colName) {
             $columnStack[] = "<td>{$row[$colName]}</td>";

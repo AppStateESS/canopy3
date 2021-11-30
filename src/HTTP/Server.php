@@ -20,7 +20,7 @@ class Server
     public static function __callStatic(string $methodName, array $arguments)
     {
         $result = preg_split('/([A-Z][a-z]+)/', $methodName, -1,
-                PREG_SPLIT_DELIM_CAPTURE);
+            PREG_SPLIT_DELIM_CAPTURE);
 
         foreach ($result as $val) {
             if ($val != 'get' && $val != '') {
@@ -58,7 +58,7 @@ class Server
     public static function getHost()
     {
         $httpHost = filter_input(INPUT_SERVER, 'HTTP_HOST',
-                FILTER_VALIDATE_DOMAIN);
+            FILTER_VALIDATE_DOMAIN);
         if (empty($httpHost)) {
             throw new \Exception('$_SERVER[HTTP_HOST] superglobal does not exist');
         }
@@ -97,6 +97,11 @@ class Server
     public static function getRequestTime()
     {
         return (int) $_SERVER['REQUEST_TIME'];
+    }
+
+    public static function hasUri()
+    {
+        return isset($_SERVER['HTTP_HOST']);
     }
 
     /**

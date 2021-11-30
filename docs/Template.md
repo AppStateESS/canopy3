@@ -106,6 +106,17 @@ EOF : null;
 
 Array values can be looped through in a couple of ways.
 
+### implode
+The easiest method is to ```implode``` the array.
+
+```
+<ul>
+  <li><?=$t->rows->implode('</li><li>')?></li>
+<ul>
+```
+```implode()``` works with one dimensional, ordered arrays. Associative arrays and multi-dimensional will not work.
+
+### asTableRows
 If you want the values to fill out a table, you can use the `asTableRows` function.
 
 The function accepts an option array.
@@ -137,6 +148,7 @@ The rows would be in this format.
 </tr>
 ```
 
+### loopInclude
 Alternately, you loop the rows within another file using `loopInclude`.
 
 ```
@@ -160,6 +172,7 @@ The result:
 </div>
 ```
 
+### loopFunction
 If you want to run the array through a custom function, you can use `loopFunction`.
 
 ```
@@ -210,3 +223,4 @@ If you need the URL to the home directory, use the permanent value ```homeUrl```
 ...
 </form>
 ```
+`homeUrl` will **not** be set if the `$_SERVER['HTTP_HOST']` is missing. In other words, when used in a script.

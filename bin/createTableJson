@@ -10,16 +10,10 @@
  * @license https://opensource.org/licenses/MIT
  */
 require_once dirname(__DIR__, 1) . '/DirectoryDefines.php';
+require_once './src/SharedBashFunctions.php';
 require_once C3_DIR . 'src/Database/FieldGenerator.php';
 require_once C3_DIR . 'src/AutoLoader.php';
 \Canopy3\AutoLoader::initialize();
-
-function message($message)
-{
-    echo $message;
-    echo "\n";
-    exit();
-}
 
 function help()
 {
@@ -111,7 +105,7 @@ function run(array $argv)
         Canopy3\Database\FieldGenerator::createFieldFile($className, $filePath, $overwrite);
         message("Created file: $filePath");
     } catch (Exception $ex) {
-        message($ex->getMessage());
+        message("An error occurred: {$ex->getMessage()}");
     }
 }
 

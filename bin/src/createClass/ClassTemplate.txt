@@ -1,0 +1,12 @@
+<?='<'?>?php
+
+class <?=$t->className?>
+
+{
+<?=$t->properties->loopFunction('propertyTpl')?>
+
+<?=$t->properties->loopFunction('getTpl')?>
+
+<?=$t->properties->loopFunction('setTpl')?>
+
+}

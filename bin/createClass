@@ -1,0 +1,81 @@
+#!/usr/bin/env php
+<?php
+/**
+ * MIT License
+ * Copyright (c) 2021 Electronic Student Services @ Appalachian State University
+ *
+ * See LICENSE file in root directory for copyright and distribution permissions.
+ *
+ * @author Matthew McNaney <mcnaneym@appstate.edu>
+ * @license https://opensource.org/licenses/MIT
+ */
+require_once dirname(__DIR__, 1) . '/DirectoryDefines.php';
+require_once './src/SharedBashFunctions.php';
+require_once C3_DIR . 'src/AutoLoader.php';
+require_once './src/createClass/SubTemplates.php';
+\Canopy3\AutoLoader::initialize();
+
+function help()
+{
+    $help = <<<EOF
+Usage: createClass -n className -p propertyname1 propertyname2
+EOF;
+    message($help);
+}
+
+function run(array $argv)
+{
+    if (empty($argv[1])) {
+        help();
+    }
+    $collectProperties = false;
+
+    array_shift($argv);
+    $idKey = array_search('id', $argv);
+    if ($idKey !== false) {
+        unset($argv[$idKey]);
+    }
+
+    $argv = array_values($argv);
+    $total = count($argv);
+
+    try {
+        for ($i = 0; $i < $total; $i++) {
+            $argument = $argv[$i];
+            switch ($argument) {
+                case '-n':
+                    $i++;
+                    $className = $argv[$i];
+                    break;
+
+                case '-p':
+                    if (empty($className)) {
+                        message('Error: set class name with -n before assigning properties,');
+                    }
+                    $collectProperties = true;
+                    break;
+
+                default:
+                    if ($collectProperties) {
+                        echo $argument;
+                        $properties[] = $argument;
+                    } else {
+                        help();
+                    }
+            }
+        }
+
+        $template = new Canopy3\Template('./src/createClass/');
+        $tplValues['className'] = $className;
+        sort($properties);
+        $tplValues['properties'] = $properties;
+
+        $tplRender = $template->render('ClassTemplate.txt', $tplValues);
+        echo $tplRender;
+    } catch (\Exception $ex) {
+        throw $ex;
+        message("An error occurred: {$ex->getMessage()}");
+    }
+}
+
+run($argv);

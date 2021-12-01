@@ -2,9 +2,11 @@
   "require": {
     "doctrine/dbal": "^3.1",
     "oomphinc/composer-installers-extender": "^2.0",
-    "appstateess/canopy3-theme-simple": "dev-master",
     "appstateess/canopy3-dashboard-setup": "^1.0",
+    "appstateess/canopy3-dashboard-site": "^1.0",
+    "appstateess/canopy3-dashboard-system": "^1.0",
     "appstateess/canopy3-dashboard-user": "^1.0",
+    "appstateess/canopy3-theme-simple": "dev-master",
     "ezyang/htmlpurifier": "^4.13"
   },
   "extra": {
@@ -28,15 +30,23 @@
   "repositories": [
     {
       "type": "path",
-      "url": "/var/www/html/c3-themes/canopy3-theme-simple"
+      "url": "resources/dashboards/canopy3-dashboard-setup"
     },
     {
       "type": "path",
-      "url": "/var/www/html/c3-dashboards/canopy3-dashboard-setup"
+      "url": "resources/dashboards/canopy3-dashboard-site"
     },
     {
       "type": "path",
-      "url": "/var/www/html/c3-dashboards/canopy3-dashboard-user"
+      "url": "resources/dashboards/canopy3-dashboard-system"
+    },
+    {
+      "type": "path",
+      "url": "resources/dashboards/canopy3-dashboard-user"
+    },
+    {
+      "type": "path",
+      "url": "resources/themes/canopy3-theme-simple"
     }
   ],
   "minimum-stability": "stable"

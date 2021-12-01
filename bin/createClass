@@ -18,7 +18,7 @@ require_once './src/createClass/SubTemplates.php';
 function help()
 {
     $help = <<<EOF
-Usage: createClass -n className -p propertyname1 propertyname2 > ./ClassFile.php
+Usage: createClass -c className [-n nameSpace] -p propertyname1 propertyname2 > ./ClassFile.php
 EOF;
     message($help);
 }
@@ -35,7 +35,7 @@ function run(array $argv)
     if ($idKey !== false) {
         unset($argv[$idKey]);
     }
-
+    $namespace = null;
     $argv = array_values($argv);
     $total = count($argv);
 
@@ -43,15 +43,20 @@ function run(array $argv)
         for ($i = 0; $i < $total; $i++) {
             $argument = $argv[$i];
             switch ($argument) {
-                case '-n':
+                case '-c':
+                    $collectProperties = false;
                     $i++;
                     $className = $argv[$i];
                     break;
 
+                case '-n':
+                    $collectProperties = false;
+                    $i++;
+                    $namespace = $argv[$i];
+                    $namespace = str_replace(':', '\\', $namespace);
+                    break;
+
                 case '-p':
-                    if (empty($className)) {
-                        message('Error: set class name with -n before assigning properties,');
-                    }
                     $collectProperties = true;
                     break;
 
@@ -66,6 +71,7 @@ function run(array $argv)
 
         $template = new Canopy3\Template('./src/createClass/');
         $tplValues['className'] = $className;
+        $tplValues['namespace'] = $namespace;
         sort($properties);
         $tplValues['properties'] = $properties;
 

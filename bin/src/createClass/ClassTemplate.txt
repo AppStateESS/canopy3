@@ -1,7 +1,21 @@
 <?='<'?>?php
+declare(strict_types=1);
+/**
+ * MIT License
+ * Copyright (c) <?=date('Y')?> Electronic Student Services @ Appalachian State University
+ *
+ * See LICENSE file in root directory for copyright and distribution permissions.
+ *
+ * @author
+ * @license https://opensource.org/licenses/MIT
+ */
 
-class <?=$t->className?>
+<?=$t->wrap('namespace', 'namespace ', ';')?>
 
+/**
+ * @table <?=strtolower($t->className)?> 
+ */
+class <?=$t->className?> extends \Canopy3\AbstractResource
 {
 <?=$t->properties->loopFunction('propertyTpl')?>
 

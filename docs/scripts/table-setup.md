@@ -3,6 +3,7 @@
 To assist you in installing a dashboard or plugin, you can create database JSON snapshots of your object. This snapshot can then inform Doctrine DBAL class to create a new table.
 
 ## createTableJson
+
 In the canopy3/bin directory is a PHP console script named ```createTableJson```.
 It uses Canopy3's Database\FieldGenerator to create a JSON file based on your class.
 
@@ -93,6 +94,7 @@ The ```@datatype``` label above is an example of options you may add to your cla
 ```@isPrimary [boolean]``` - if true, this field will be set as the table's primary key. The ```id``` property will be used by default.
 
 ## Doctrine types
+
 The list below contains all the allowed field types. You can get more information on the Doctrine DBAL documentation page: https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/types.html#types
 
 * smallint

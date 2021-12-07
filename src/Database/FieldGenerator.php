@@ -41,7 +41,6 @@ class FieldGenerator
      */
     public static function deriveFields($resource, bool $asArray = false)
     {
-
         if (is_string($resource)) {
             $reflection = new \ReflectionClass($resource);
             $className = $resource;

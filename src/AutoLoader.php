@@ -16,10 +16,14 @@ class AutoLoader
     public static function initialize()
     {
         // Composer autoloader
+        if (!is_file(C3_DIR . 'vendor/autoload.php')) {
+            exit('Run composer install.');
+            exit;
+        }
         require_once C3_DIR . 'vendor/autoload.php';
 
         // Canopy3 and resource autoloader
-        spl_autoload_register(fn($namespaceString) => self::run($namespaceString));
+        spl_autoload_register(fn ($namespaceString) => self::run($namespaceString));
     }
 
     /**
@@ -91,5 +95,4 @@ class AutoLoader
         include C3_DIR . 'src/AutoLoader/Libraries.php';
         return $autoloadLibraries;
     }
-
 }

@@ -16,10 +16,8 @@ require_once C3_DIR . 'src/AutoLoader.php';
 use Canopy3\Router;
 use Canopy3\Autoloader;
 use Canopy3\HTTP\Response;
-use Canopy3\Role;
-use Canopy3\OutputError;
 
-\Canopy3\AutoLoader::initialize();
+AutoLoader::initialize();
 \Canopy3\requireConfigFile('config/system');
 
 set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
@@ -29,4 +27,3 @@ set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
 $router = Router::singleton();
 $response = $router->execute();
 Response::execute($response);
-

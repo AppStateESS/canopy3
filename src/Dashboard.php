@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Canopy3;
 
-class Plugin
+class Dashboard
 {
 
-    private static \Canopy3\Plugin $singleton;
+    private static \Canopy3\Dashboard $singleton;
     private \stdClass $data;
 
     public static function singleton()
@@ -35,24 +35,29 @@ class Plugin
         return $this->data;
     }
 
-    public function getDirectory(string $plugin)
+    public function getDirectory(string $dashboard)
     {
-        return $this->data->$plugin->directory ?? $plugin;
+        return $this->data->$dashboard->directory ?? $dashboard;
     }
 
     /**
-     * Loads the plugins.json file in the resource/plugins/ directory.
+     * Loads the dashboard.json file in the resource/dashboards/ directory.
      *
      * @return boolean
      */
     private function load()
     {
-        $pluginPath = C3_PLUGINS_DIR . 'plugins.json';
-        if (is_file($pluginPath)) {
-            $this->data = \Canopy3\JSON::getFileData($pluginPath);
+        $dashboardPath = C3_DASHBOARDS_DIR . 'dashboard.json';
+        if (is_file($dashboardPath)) {
+            $this->data = \Canopy3\JSON::getFileData($dashboardPath);
         } else {
             $this->data = new \stdClass;
         }
+    }
+
+    public static function register($dashboardName)
+    {
+
     }
 
 }

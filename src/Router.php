@@ -22,7 +22,7 @@ use Canopy3\Exception\CodedException;
 use Canopy3\Exception\Client\DashboardControllerNotFound;
 use Canopy3\Exception\PluginControllerNotFound;
 use Canopy3\Exception\RouterCannotExecute;
-use Canopy3\Exception\UnknownRequestMethod;
+use Canopy3\Exception\RouterReassignException;
 use Canopy3\Exception\Client\EmptyResponse;
 
 class Router
@@ -120,11 +120,6 @@ class Router
         $this->parseRequest();
     }
 
-//(dashboard|plugin)/Library/Controller/Command|ID[/Command]
-//file/document.pdf
-//image/friend.jpg
-//page/name-of-page
-
     /**
      * Calls the current command on the current controller and outputs the
      * response.
@@ -132,12 +127,17 @@ class Router
     public function execute()
     {
         $this->loadController();
-        $response = $this->controller->{$this->method}($this->command,
-            $this->isAjax);
+        $response = $this->controller->{$this->method}(
+            $this->command,
+            $this->isAjax
+        );
 
         if (is_null($response)) {
-            throw new EmptyResponse($this->controllerClassName, $this->method,
-                    $this->command);
+            throw new EmptyResponse(
+                    $this->controllerClassName,
+                    $this->method,
+                    $this->command
+            );
         }
         return is_a($response, 'Canopy3\HTTP\Response\ResponseType') ? $response : Response::themed($response);
     }
@@ -179,11 +179,11 @@ class Router
 
     public function setControllerName(string $controllerName)
     {
-//        if (!isset($this->controllerName) || $this->forceReassign) {
+        //        if (!isset($this->controllerName) || $this->forceReassign) {
         $this->controllerName = $controllerName;
-//        } else {
-//            throw new \RouterReassignException;
-//        }
+        //        } else {
+        //            throw new \RouterReassignException;
+        //        }
     }
 
     public function setLibrary(string $library)
@@ -191,7 +191,7 @@ class Router
         if (!isset($this->library) || $this->forceReassign) {
             $this->library = $library;
         } else {
-            throw new \RouterReassignException;
+            throw new RouterReassignException;
         }
     }
 
@@ -200,7 +200,7 @@ class Router
         if (!isset($this->resourceType) || $this->forceReassign) {
             $this->resourceType = $resourceType;
         } else {
-            throw new \RouterReassignException;
+            throw new RouterReassignException;
         }
     }
 
@@ -218,8 +218,11 @@ class Router
         if ($requestUri === 'index.php') {
             return false;
         }
-        $cleanedUri = str_replace('//', '/',
-            preg_replace('@/$@', '', $requestUri));
+        $cleanedUri = str_replace(
+            '//',
+            '/',
+            preg_replace('@/$@', '', $requestUri)
+        );
         return explode('/', $cleanedUri);
     }
 
@@ -257,8 +260,8 @@ class Router
                 $this->controllerClassName = 'Canopy3\\DataController\\Page';
                 break;
         }
-//                throw new CodedException('Router resource type missing or unknown',
-//                        404);
+        //                throw new CodedException('Router resource type missing or unknown',
+        //                        404);
     }
 
     private function loadResourceCommand(array $requestUriArray)
@@ -302,8 +305,10 @@ class Router
                 break;
 
             default:
-                throw new CodedException("Unknown resource controller $controllerName",
-                        404);
+                throw new CodedException(
+                        "Unknown resource controller $controllerName",
+                        404
+                );
         }
     }
 
@@ -351,6 +356,11 @@ class Router
         } else {
             $this->controllerName = 'Controller';
         }
+    }
+
+    private function setResourceId(int $resourceId)
+    {
+        $this->resourceId = $resourceId;
     }
 
 }

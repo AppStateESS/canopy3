@@ -30,14 +30,14 @@ class ContentStack
     protected $emptyWarning = false;
     protected $filePath;
     protected $values;
-    private static string $homeUrl;
+    static private string $homeUrl;
 
     public function __construct($template, array $values, $emptyWarning = false)
     {
-        if (Server::hasUri() && empty($this->homeUrl)) {
-            $this->homeUrl = Server::getCurrentUri();
-            $this->values['homeUrl'] = $this->homeUrl;
+        if (Server::hasUri() && empty(self::$homeUrl)) {
+            self::$homeUrl = Server::getCurrentUri();
         }
+        $this->values['homeUrl'] = self::$homeUrl;
         $this->template = $template;
         $this->emptyWarning = $emptyWarning;
         foreach ($values as $k => $v) {

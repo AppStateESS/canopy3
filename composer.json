@@ -27,14 +27,19 @@
       ]
     }
   },
+  "autoload": {
+    "psr-4": {
+      "Canopy3\\": "src/"
+    }
+  },
   "repositories": [
     {
       "type": "path",
-      "url": "resources/dashboards/canopy3-dashboard-setup"
+      "url": "resources/dashboards/canopy3-dashboard-site"
     },
     {
       "type": "path",
-      "url": "resources/dashboards/canopy3-dashboard-site"
+      "url": "resources/dashboards/canopy3-dashboard-setup"
     },
     {
       "type": "path",
@@ -49,5 +54,10 @@
       "url": "resources/themes/canopy3-theme-simple"
     }
   ],
+  "scripts": {
+    "post-package-install": [
+      "Canopy3\\System::registerFromComposer"
+    ]
+  },
   "minimum-stability": "stable"
 }

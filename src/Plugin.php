@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Canopy3;
 
-class Dashboard
+class Plugin
 {
 
     private static \Canopy3\Dashboard $singleton;
@@ -54,5 +54,4 @@ class Dashboard
             $this->data = new \stdClass;
         }
     }
-
 }

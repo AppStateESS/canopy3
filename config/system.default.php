@@ -10,7 +10,8 @@
  */
 /**
  * If true, then the program is set into development mode. Normally suppressed
- * errors will print.
+ * errors will print. You may use this value for your dashboards, plugins, themes, etc.
+ *
  *
  * Default: false
  */

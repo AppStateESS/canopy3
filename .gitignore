@@ -2,4 +2,5 @@
 /config/resourcesUrl.php
 /config/setup.php
 /config/system.php
+/config/*.json
 /vendor/

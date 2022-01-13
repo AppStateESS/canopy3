@@ -43,6 +43,11 @@ class Router
      * @var string
      */
     private ?string $controllerName;
+
+    /**
+     * The full namespace of the current requested controller.
+     * @var string|null
+     */
     private ?string $controllerClassName;
 
     /**
@@ -164,17 +169,20 @@ class Router
     public function setCommand(string $command)
     {
         $this->command = $command;
+        return $this;
     }
 
     public function setController(\Canopy3\Controller $controller)
     {
         $this->controller = $controller;
         $this->controllerClassName = get_class($controller);
+        return $this;
     }
 
     public function setControllerClassName(string $controllerClassName)
     {
         $this->controllerClassName = $controllerClassName;
+        return $this;
     }
 
     public function setControllerName(string $controllerName)
@@ -283,7 +291,7 @@ class Router
     }
 
     /**
-     *
+     * Forms the complete controller class name from the library and controllerName parameters.
      * @throws DashboardControllerNotFound
      * @throws PluginControllerNotFound
      */
@@ -293,7 +301,7 @@ class Router
             case 'dashboard':
                 $this->controllerClassName = "\\Dashboard\\{$this->library}\\Controller\\{$this->controllerName}";
                 if (!class_exists($this->controllerClassName)) {
-                    throw new DashboardControllerNotFound($this->controllerName);
+                    throw new DashboardControllerNotFound($this->controllerClassName);
                 }
                 break;
 
@@ -344,6 +352,13 @@ class Router
         }
     }
 
+    /**
+     * Attempts to read the requested library from the URI.
+     * Next, the controller name is popped off the end of the URI.
+     * If it doesn't exist, "Controller" is used by default.
+     * @param type $requestUriArray
+     * @throws CodedException
+     */
     private function parseResourceUri(&$requestUriArray)
     {
         if (empty($requestUriArray)) {
@@ -352,9 +367,9 @@ class Router
         $this->setLibrary(array_shift($requestUriArray));
 
         if (!empty($requestUriArray)) {
-            $this->controllerName = array_shift($requestUriArray);
+            $this->setControllerName(array_shift($requestUriArray));
         } else {
-            $this->controllerName = 'Controller';
+            $this->setControllerName('Controller');
         }
     }
 

@@ -1,0 +1,71 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * MIT License
+ * Copyright (c) 2022 Electronic Student Services @ Appalachian State University
+ *
+ * See LICENSE file in root directory for copyright and distribution permissions.
+ *
+ * @author Matthew McNaney <mcnaneym@appstate.edu>
+ * @license https://opensource.org/licenses/MIT
+ */
+require_once './src/Initialize.php';
+require_once './src/SharedBashFunctions.php';
+
+function help()
+{
+    $message = <<<EOF
+Usage:
+$ registerSystem [-d|-p] system-name
+------------------------------------------
+Script will look for 'system-name' depending on the -d or -p parameter.
+-d   Dashboard system
+-p   Plugin system
+
+EOF;
+    message($message);
+}
+
+function run(array $argv)
+{
+    $systemType = null;
+    $systemName = null;
+
+    if (empty($argv[1])) {
+        help();
+    }
+    $forceUpdate = false;
+    array_shift($argv);
+    foreach ($argv as $argument) {
+        switch ($argument) {
+            case '-d':
+                $systemType = $systemType ?? 'dashboards';
+                break;
+
+            case '-p':
+                $systemType = $systemType ?? 'plugins';
+                break;
+
+            default:
+                $systemName = $argument;
+        }
+    }
+    if (empty($systemName) || empty($systemType)) {
+        help();
+    }
+    try {
+        $filePath[] = C3_SYSTEMS_DIR . $systemType;
+        $filePath[] = $systemName;
+        $filePath[] = 'system.json';
+        $systemObj = \Canopy3\SystemFactory::getSystemObjectFromFile(implode('/', $filePath));
+        if (empty($systemObj)) {
+            message('Unable to register the system.json file.');
+        }
+        Canopy3\SystemFactory::register($systemObj);
+    } catch (Exception $ex) {
+        message($ex->getMessage());
+    }
+}
+
+run($argv);

@@ -72,9 +72,10 @@ function setTpl(string $property): string
     extract(typeAndValue($property));
     $funcName = 'set' . ucwords($value);
     $funcStack[] = setComment($value, $type);
-    $funcStack[] = '    public function ' . $funcName . '(' . $type . ' $' . $value . ')';
+    $funcStack[] = '    public function ' . $funcName . '(' . $type . ' $' . $value . ') : self';
     $funcStack[] = '    {';
     $funcStack[] = '        $this->' . $value . ' = $' . $value . ';';
+    $funcStack[] = '        return self;';
     $funcStack[] = '    }';
     $funcStack[] = '';
 

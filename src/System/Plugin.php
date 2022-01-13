@@ -15,5 +15,7 @@ namespace Canopy3\System;
 
 class Plugin extends AbstractSystem
 {
-    protected $type = 'canopy3-plugin';
+
+    protected string $type = 'canopy3-plugin';
+
 }

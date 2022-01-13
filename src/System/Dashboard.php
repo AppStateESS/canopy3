@@ -15,5 +15,7 @@ namespace Canopy3\System;
 
 class Dashboard extends AbstractSystem
 {
-    protected $type = 'canopy3-dashboard';
+
+    protected string $type = 'canopy3-dashboard';
+
 }

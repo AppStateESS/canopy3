@@ -55,7 +55,7 @@ class Template
      */
     public static function dashboardDirectory(string $library): string
     {
-        return C3_DIR . "resources/dashboards/$library/templates/";
+        return C3_DIR . "systems/dashboards/$library/templates/";
     }
 
     public function getPath(): string

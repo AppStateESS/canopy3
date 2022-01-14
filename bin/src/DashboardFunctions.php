@@ -15,7 +15,7 @@ require_once '../DirectoryDefines.php';
 /**
  * Returns the object found in a dashboard JSON file.
  * @param string $dashboardName Name of the dashboard path in the
- *               resources/dashboards/ directory.
+ *               systems/dashboards/ directory.
  * @return
  */
 function getDashboardJSON(string $dashboardName): object

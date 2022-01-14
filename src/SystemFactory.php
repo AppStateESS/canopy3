@@ -29,39 +29,53 @@ if (!defined('C3_DASHBOARDS_DIR')) {
 if (!defined('C3_SYSTEMS_CONFIG_DIR')) {
     define('C3_SYSTEMS_CONFIG_DIR', C3_DIR . 'config/');
 }
+require_once C3_DIR . 'src/GlobalFunctions.php';
 
 class SystemFactory
 {
 
     /**
-     * Reads a system.json file and builds the appropriate dashboard|plugin object.
+     * Reads a system.json file and builds the appropriate dashboard|plugin|theme object.
      * @param string $systemFile
-     * @return Dashboard|Plugin
+     * @return Dashboard|Plugin|Theme
      */
-    public static function getSystemObjectFromFile(string $systemFile)
+    public static function getSystemObjectFromFile(string $systemFile): AbstractSystem
     {
         $content = file_get_contents($systemFile);
         if (empty($content)) {
-            return;
+            throw new \Exception('System JSON file is empty.');
         }
         $rawObject = json_decode($content);
+        if (!is_object($rawObject)) {
+            throw new \Exception("File system.json corrupted.");
+        }
+        if (!isset($rawObject->type)) {
+            throw new \Exception("Missing system type.");
+        }
+
         if ($rawObject->type == 'canopy3-dashboard') {
-            return self::buildDashboard($rawObject);
-        } elseif ($rawObject->type == 'canopy3-dashboard') {
-            return self::buildPlugin($rawObject);
+            return self::buildDashboardFromStdObject($rawObject);
+        } elseif ($rawObject->type == 'canopy3-plugin') {
+            return self::buildPluginFromStdObject($rawObject);
         } elseif ($rawObject->type == 'canopy3-theme') {
-            return self::buildTheme($rawObject);
+            return self::buildThemeFromStdObject($rawObject);
         } else {
             throw new \Exception("Unknown system type [$rawObject->type]");
         }
     }
 
+    /**
+     * Registers a system to Canopy 3 for use or installation.
+     * @param AbstractSystem $system
+     * @return boolean
+     * @throws \Exception
+     */
     public static function register(AbstractSystem $system)
     {
         $jsonFilePath = self::getSystemFilePath($system);
         if (!is_file($jsonFilePath)) {
             if (!is_writable(C3_SYSTEMS_CONFIG_DIR)) {
-                throw new \Exception('Systems file missing. Restricted directory prevents a new file - ' . C3_SYSTEMS_CONFIG_DIR);
+                throw new \Exception('Systems file missing from [' . C3_SYSTEMS_CONFIG_DIR . ']. Write permissions prevent new file creation.');
             }
             if (!self::createSystemFile($system->type)) {
                 throw new \Exception('Could not create system file in ' . C3_SYSTEMS_CONFIG_DIR);
@@ -79,33 +93,36 @@ class SystemFactory
     }
 
     /**
-     * Helps composer register a system to Canopy 3.
+     * Helps composer register a system to Canopy 3. Expects to be run
+     * in console script and not in a web page.
      * @param PackageEvent $event
      * @return void
      */
-    public static function registerFromComposer(PackageEvent $event)
+    public static function composerRegister(PackageEvent $event)
     {
-        $operation = $event->getOperation();
-        $package = method_exists($operation, 'getPackage') ? $operation->getPackage() : $operation->getInitialPackage();
-        list(, $packageName) = explode('/', $package->getName());
-        $systemFile = self::getSystemFileByPackageName($packageName);
-        if (empty($systemFile)) {
-            echo "Package not a Canopy3 system.";
-            return;
-        }
-        $systemObject = self::getSystemObjectFromFile($systemFile);
-        if (empty($systemObject)) {
-            echo "Package has a corrupt system.json file.";
-            return;
-        }
-        if ($systemObject->type === 'dashboard') {
-            self::buildDashboard($systemObject);
-        } elseif ($systemObject->type === 'plugin') {
-            self::buildPlugin($systemObject);
-        } elseif ($systemObject->type === 'theme') {
-            self::buildTheme($systemObject);
-        } else {
-            echo 'Unknown system package type.';
+        try {
+            $operation = $event->getOperation();
+            $package = method_exists($operation, 'getPackage') ? $operation->getPackage() : $operation->getInitialPackage();
+            list(, $packageName) = explode('/', $package->getName());
+            $systemFile = self::getSystemFileByPackageName($packageName);
+            if (empty($systemFile)) {
+                becho("- Ignoring $packageName.", 'lgray', true);
+                return;
+            }
+            $systemObject = self::getSystemObjectFromFile($systemFile);
+            if (empty($systemObject)) {
+                becho('Package has a corrupt system.json file.', 'red', true);
+                return;
+            }
+            becho(" - Trying to register {$systemObject->getType()} > {$systemObject->getName()}.", 'green', true);
+            if (self::register($systemObject)) {
+                becho(' - ' . $systemObject->getName() . ' successfully registered!', 'green', true);
+            } else {
+                becho(' - ' . $systemObject->getName() . ' previously registered.', 'lgreen', true);
+            }
+        } catch (\Exception $e) {
+            becho("Caught exception from {$e->getFile()}:{$e->getLine()} - " . $e->getMessage(), 'red', true);
+            exit;
         }
     }
 
@@ -127,9 +144,9 @@ class SystemFactory
      * @param \stdClass $system
      * @return Dashboard
      */
-    private static function buildDashboard(\stdClass $system): Dashboard
+    private static function buildDashboardFromStdObject(\stdClass $system): Dashboard
     {
-        return self::plugStandard($system, new Dashboard);
+        return self::copyStandardObjectToSystem($system, new Dashboard);
     }
 
     /**
@@ -138,9 +155,9 @@ class SystemFactory
      * @param \stdClass $system
      * @return Plugin
      */
-    private static function buildPlugin(\stdClass $system): Plugin
+    private static function buildPluginFromStdObject(\stdClass $system): Plugin
     {
-        return self::plugStandard($system, new Plugin);
+        return self::copyStandardObjectToSystem($system, new Plugin);
     }
 
     /**
@@ -149,9 +166,22 @@ class SystemFactory
      * @param \stdClass $system
      * @return Theme
      */
-    private static function buildTheme(\stdClass $system): Theme
+    private static function buildThemeFromStdObject(\stdClass $system): Theme
     {
-        return self::plugStandard($system, new Theme);
+        return self::copyStandardObjectToSystem($system, new Theme);
+    }
+
+    /**
+     * Receives a basic PHP standard object and pipes it into a System object.
+     * @param \stdClass $system
+     * @return AbstractSystem
+     */
+    private static function copyStandardObjectToSystem(\stdClass $stdObject, AbstractSystem $system)
+    {
+        foreach (get_object_vars($stdObject) as $key => $value) {
+            $system->$key = $value;
+        }
+        return $system;
     }
 
     /**
@@ -250,22 +280,16 @@ class SystemFactory
         return array_search($name, array_column($systemList, 'name'));
     }
 
+    /**
+     * Tries to pull a system from the list using getSysterFromListByName. Returns TRUE
+     * if one is found. Prevents multiple registration.
+     * @param AbstractSystem $system
+     * @param array $systemList
+     * @return type
+     */
     private static function isSystemInList(AbstractSystem $system, array $systemList)
     {
-        return (bool) self::getSystemFromListByName($system->name, $systemList);
-    }
-
-    /**
-     * Receives a basic PHP standard object and pipes it into a System object.
-     * @param \stdClass $system
-     * @return AbstractSystem
-     */
-    private static function plugStandard(\stdClass $stdObject, AbstractSystem $system)
-    {
-        foreach (get_object_vars($stdObject) as $key => $value) {
-            $system->$key = $value;
-        }
-        return $system;
+        return self::getSystemFromListByName($system->name, $systemList) !== false;
     }
 
     /**

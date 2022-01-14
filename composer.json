@@ -35,28 +35,28 @@
   "repositories": [
     {
       "type": "path",
-      "url": "resources/dashboards/canopy3-dashboard-site"
+      "url": "systems/dashboards/canopy3-dashboard-site"
     },
     {
       "type": "path",
-      "url": "resources/dashboards/canopy3-dashboard-setup"
+      "url": "systems/dashboards/canopy3-dashboard-setup"
     },
     {
       "type": "path",
-      "url": "resources/dashboards/canopy3-dashboard-system"
+      "url": "systems/dashboards/canopy3-dashboard-system"
     },
     {
       "type": "path",
-      "url": "resources/dashboards/canopy3-dashboard-user"
+      "url": "systems/dashboards/canopy3-dashboard-user"
     },
     {
       "type": "path",
-      "url": "resources/themes/canopy3-theme-simple"
+      "url": "systems/themes/canopy3-theme-simple"
     }
   ],
   "scripts": {
     "post-package-install": [
-      "Canopy3\\System::registerFromComposer"
+      "Canopy3\\SystemFactory::composerRegister"
     ]
   },
   "minimum-stability": "stable"

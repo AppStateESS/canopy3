@@ -9,9 +9,9 @@
  * @author Matthew McNaney <mcnaneym@appstate.edu>
  * @license https://opensource.org/licenses/MIT
  */
-function message($message)
+function message(string $message, string $color = null)
 {
-    echo $message;
     echo "\n";
-    exit();
+    \Canopy3\becho($message, $color);
+    echo "\n\n";
 }

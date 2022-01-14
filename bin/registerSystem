@@ -62,7 +62,11 @@ function run(array $argv)
         if (empty($systemObj)) {
             message('Unable to register the system.json file.');
         }
-        Canopy3\SystemFactory::register($systemObj);
+        if (Canopy3\SystemFactory::register($systemObj)) {
+            message("System registered: " . $systemObj->title ?? $systemObj->name, 'lcyan');
+        } else {
+            message('System previously registered. Not added.', 'red');
+        }
     } catch (Exception $ex) {
         message($ex->getMessage());
     }

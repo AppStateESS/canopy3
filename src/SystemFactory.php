@@ -21,6 +21,7 @@ use Canopy3\System\Dashboard;
 use Canopy3\System\Plugin;
 use Canopy3\System\Theme;
 use Canopy3\System\AbstractSystem;
+use Canopy3\Exception\FileReadError;
 
 if (!defined('C3_DASHBOARDS_DIR')) {
     require_once './DirectoryDefines.php';
@@ -34,8 +35,29 @@ require_once C3_DIR . 'src/GlobalFunctions.php';
 class SystemFactory
 {
 
+    static ?array $dashboardList = null;
+    static ?array $dashboardNamespaces = null;
+    static ?array $pluginList = null;
+    static ?array $pluginNamespaces = null;
+
     /**
-     * Reads a system.json file and builds the appropriate dashboard|plugin|theme object.
+     * Receives a dashboard name string and returns the registered directory if exists.
+     * If not set, returns false.
+     *
+     * @todo  APCU
+     * @param string $classDirectory
+     * @return string | false
+     */
+    public static function getDashboardDirectoryByNamespace(string $namespace)
+    {
+        if (is_null(self::$dashboardNamespaces)) {
+            self::loadDashboardList();
+        }
+        return self::$dashboardNamespaces[$namespace] ?? false;
+    }
+
+    /**
+     * Reads a system json file and builds the appropriate dashboard|plugin|theme object.
      * @param string $systemFile
      * @return Dashboard|Plugin|Theme
      */
@@ -290,6 +312,48 @@ class SystemFactory
     private static function isSystemInList(AbstractSystem $system, array $systemList)
     {
         return self::getSystemFromListByName($system->name, $systemList) !== false;
+    }
+
+    /**
+     * Loads the dashboard list json into the static dashboardList variable.
+     */
+    private static function loadDashboardList()
+    {
+        $jsonFile = self::getSystemListFilePathByType('canopy3-dashboard');
+        $dashboardList = self::getSystemFile($jsonFile);
+        foreach ($dashboardList as $dashboard) {
+            self::$dashboardList[$dashboard->name] = $dashboard;
+            self::$dashboardNamespaces[$dashboard->namespace] = $dashboard->directory;
+        }
+    }
+
+    /**
+     * Loads the plugin list json into the static dashboardList variable.
+     */
+    private static function loadPluginList()
+    {
+        $jsonFile = self::getSystemListFilePathByType('canopy3-plugin');
+        $pluginList = self::getSystemFile($jsonFile);
+        foreach ($pluginList as $plugin) {
+            self::$pluginList[$plugin->name] = $plugin;
+            self::$pluginNamespaces[$plugin->namespace] = $plugin->directory;
+        }
+    }
+
+    private static function getSystemFile(string $systemFilePath)
+    {
+        if (!is_file($systemFilePath)) {
+            throw new Exception\FileNotFound($systemFilePath);
+        }
+        $jsonList = file_get_contents($systemFilePath);
+        if ($jsonList === false) {
+            throw new FileReadError($systemFilePath);
+        }
+        $jsonDecoded = json_decode($jsonList);
+        if (!is_array($jsonDecoded)) {
+            throw new \Exception("System file corrupted [$systemFilePath]");
+        }
+        return $jsonDecoded;
     }
 
     /**

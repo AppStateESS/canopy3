@@ -22,8 +22,6 @@ AutoLoader::initialize();
 
 set_exception_handler(array('\Canopy3\ErrorHandler', 'catchError'));
 
-// Determines if setup is required
-
 $router = Router::singleton();
 $response = $router->execute();
 Response::execute($response);
